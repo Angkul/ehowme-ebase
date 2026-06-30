@@ -1,0 +1,24 @@
+# .gitattributes
+# บรรทัดที่มี export-ignore จะถูกตัดออกจาก zip ที่ GitHub สร้างให้
+# (ใช้ git archive ซึ่ง GitHub Releases ใช้เบื้องหลัง)
+
+# Git / CI files
+.gitattributes  export-ignore
+.gitignore      export-ignore
+.github/        export-ignore
+
+# OS junk
+.DS_Store       export-ignore
+Thumbs.db       export-ignore
+desktop.ini     export-ignore
+
+# Dev / editor
+.vscode/        export-ignore
+.idea/          export-ignore
+node_modules/   export-ignore
+
+# Docs (comment out ถ้าอยากให้รวมใน zip)
+# CHANGELOG.md  export-ignore
+# README.md     export-ignore
+
+# inc/plugin-update-checker/ ต้องรวมใน zip เสมอ (อย่า export-ignore)

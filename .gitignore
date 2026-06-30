@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Build artifacts
+*.min.js
+*.min.css
+/dist/
+
+# WordPress
+.htaccess
+wp-config.php
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
