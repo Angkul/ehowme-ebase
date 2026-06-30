@@ -23,6 +23,9 @@ desktop.ini
 *.swo
 *~
 
+# Config ที่มี credentials — ห้าม push
+ebase-config.php
+
 # Logs
 *.log
 
