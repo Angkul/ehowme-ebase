@@ -90,7 +90,7 @@
 
 .header-nav ul li a:hover,
 .header-nav ul li.current-menu-item > a {
-	color: var(--header-nav-active-color, #e67e22);
+	color: var(--header-nav-active-color, #2254c5);
 }
 
 /* Nav chevron */
@@ -143,7 +143,7 @@
 .nav-dropdown-link:hover,
 .nav-dropdown-link[aria-current="page"] {
 	background: #f7f7f5;
-	color: var(--header-nav-active-color, #e67e22);
+	color: var(--header-nav-active-color, #2254c5);
 }
 
 /* ── Mega Menu ───────────────────────────── */
@@ -241,7 +241,7 @@
 	font-weight: 700;
 	text-transform: uppercase;
 	letter-spacing: 0.06em;
-	color: var(--header-nav-active-color, #e67e22);
+	color: var(--header-nav-active-color, #2254c5);
 	transition: opacity 0.15s;
 	line-height: 1.4;
 }
@@ -274,7 +274,7 @@
 }
 
 .mega-link:hover {
-	color: var(--header-nav-active-color, #e67e22);
+	color: var(--header-nav-active-color, #2254c5);
 }
 
 /* Header Actions */
@@ -382,7 +382,7 @@
 }
 
 .header-cta-btn:hover {
-	background: var(--header-nav-active-color, #e67e22);
+	background: var(--header-nav-active-color, #2254c5);
 	transform: translateX(2px);
 }
 
@@ -645,7 +645,7 @@
 	text-overflow: ellipsis;
 }
 a.ofc-hdr-title:hover {
-	color: var(--header-nav-active-color, #e67e22);
+	color: var(--header-nav-active-color, #2254c5);
 }
 .ofc-back,
 .ofc-close {
@@ -700,11 +700,11 @@ a.ofc-hdr-title:hover {
 	transition: color 0.15s, background 0.15s;
 	line-height: 1.4;
 }
-.ofc-link:hover { color: var(--header-nav-active-color, #e67e22); background: #fef9f5; }
+.ofc-link:hover { color: var(--header-nav-active-color, #2254c5); background: #fef9f5; }
 
 .ofc-item--current > .ofc-link,
 .ofc-item--current > .ofc-item-row > .ofc-link {
-	color: var(--header-nav-active-color, #e67e22);
+	color: var(--header-nav-active-color, #2254c5);
 	font-weight: 600;
 }
 
@@ -724,5 +724,5 @@ a.ofc-hdr-title:hover {
 }
 .ofc-trigger:hover {
 	background: #fef9f5;
-	color: var(--header-nav-active-color, #e67e22);
+	color: var(--header-nav-active-color, #2254c5);
 }
