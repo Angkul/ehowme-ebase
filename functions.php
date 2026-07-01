@@ -227,6 +227,12 @@ function hec_body_lang_class( $classes ) {
 	// Mobile menu style class
 	$mobile_style = get_option( 'hec_mobile_menu_style', 'dropdown' );
 	$classes[]    = 'mobile-menu-' . sanitize_html_class( $mobile_style );
+
+	// Transparent header — lets #content pull up underneath it (see style.css)
+	if ( get_option( 'hec_header_transparent', '0' ) ) {
+		$classes[] = 'hec-transparent-header';
+	}
+
 	return $classes;
 }
 

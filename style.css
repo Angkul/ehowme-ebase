@@ -5,13 +5,21 @@
  Author:       eHowMe
  Author URI:   https://www.ehowme.com/
  Template:     hello-elementor
- Version:      1.0.3
+ Version:      1.0.5
  License:      GNU General Public License v3 or later
  License URI:  http://www.gnu.org/licenses/gpl-3.0.html
  Text Domain:  ehowme-ebase
  Tags:         custom-header, multilanguage, polylang, wpml
  GitHub Theme URI: Angkul/ehowme-ebase
 */
+
+/* Stops the browser's native elastic "rubber-band" bounce when a user
+   scrolls up past the very top (common on trackpads/mobile). That bounce
+   briefly reveals the raw white canvas behind the document, which is the
+   white flash reported when scrolling back up to the top. */
+html {
+	overscroll-behavior-y: none;
+}
 
 /* =============================================
    CUSTOM HEADER STYLES
@@ -21,13 +29,86 @@
 	position: sticky;
 	top: 0;
 	z-index: 9999;
+	/* height + border-box: the 1px border-bottom is drawn INSIDE this
+	   height instead of adding to it, so the header's true rendered
+	   height always exactly equals --header-height — the same value
+	   #content's negative margin uses below. Without this, the header
+	   was 1px taller than --header-height, leaving a 1px sliver of the
+	   page background showing as a white line under the header. */
+	height: var(--header-height, 70px);
+	box-sizing: border-box;
 	background-color: var(--header-bg-color, #ffffff);
 	border-bottom: 1px solid var(--header-border-color, #e5e5e5);
-	transition: background-color 0.3s ease, box-shadow 0.3s ease;
+	transition: background-color 0.3s ease, border-bottom-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .site-header-custom.scrolled {
 	box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* WP admin bar is position:fixed at top:0, completely independent of
+   our sticky header (which is also top:0). When logged in, once the
+   header sticks, it lands right under/behind the admin bar and gets
+   clipped. Offset sticky "top" by the admin bar's height so the header
+   sticks just below it instead. Only applies when logged in — normal
+   visitors (no admin bar) are unaffected. */
+body.admin-bar .site-header-custom {
+	top: var(--wp-admin--admin-bar--height, 32px);
+}
+
+@media screen and (max-width: 782px) {
+	body.admin-bar .site-header-custom {
+		top: var(--wp-admin--admin-bar--height, 46px);
+	}
+}
+
+/* Transparent header — only while at the top of the page.
+   .scrolled is toggled by assets/js/header.js once the user scrolls.
+   Header STAYS position:sticky (same as the normal header — proven,
+   reflow-free). Instead of yanking the header out of flow on scroll
+   (which we tried first, via a spacer div that resized dynamically —
+   that caused a real, visible reflow/jump of the whole page every
+   time the scroll threshold was crossed), we pull the page's main
+   content up under the header ONCE, with a static negative margin
+   (see body.hec-transparent-header #content below). Nothing about
+   layout changes while scrolling — only background-color/text-color
+   fade, so there's nothing left to jerk or reflow. */
+.site-header-custom.is-transparent {
+	background-color: transparent;
+	border-bottom-color: transparent;
+	box-shadow: none;
+}
+
+/* Pulls the page's main content up underneath the transparent header
+   (one-time, static — not scroll-linked) so the header overlays
+   whatever's at the top of the page (e.g. a hero image) instead of
+   sitting in front of blank space. Body class is added by
+   hec_body_lang_class() in functions.php. */
+body.hec-transparent-header #content {
+	margin-top: calc(-1 * var(--header-height, 70px));
+}
+
+.site-header-custom.is-transparent .site-title-text,
+.site-header-custom.is-transparent .nav-link {
+	color: var(--header-transparent-nav-color, #ffffff);
+}
+
+.site-header-custom.is-transparent .mobile-menu-toggle span {
+	background-color: var(--header-transparent-nav-color, #ffffff);
+}
+
+.site-header-custom.is-transparent.scrolled {
+	background-color: var(--header-bg-color, #ffffff);
+	border-bottom-color: var(--header-border-color, #e5e5e5);
+}
+
+.site-header-custom.is-transparent.scrolled .site-title-text,
+.site-header-custom.is-transparent.scrolled .nav-link {
+	color: var(--header-nav-color, #333333);
+}
+
+.site-header-custom.is-transparent.scrolled .mobile-menu-toggle span {
+	background-color: var(--header-nav-color, #333333);
 }
 
 .header-inner {
@@ -37,7 +118,7 @@
 	max-width: var(--header-max-width, 1200px);
 	margin: 0 auto;
 	padding: 0 20px;
-	height: var(--header-height, 70px);
+	height: 100%; /* fills whatever height .site-header-custom has — single source of truth */
 }
 
 /* Logo */
@@ -91,6 +172,19 @@
 .header-nav ul li a:hover,
 .header-nav ul li.current-menu-item > a {
 	color: var(--header-nav-active-color, #2254c5);
+}
+
+/* Dedicated top-level nav hover color (separate from the active/current-page
+   accent color above, and from dropdown/mega link hovers which still use the
+   accent color). Higher specificity than the generic rule above so it wins
+   for .nav-link (top-level items) without touching .nav-dropdown-link/.mega-link.
+   The second selector is needed because .is-transparent.scrolled .nav-link
+   (further down, 4 classes) is otherwise MORE specific than a plain
+   ".site-header-custom .nav-link:hover" (3 classes) and would silence hover
+   once the transparent header goes solid on scroll. */
+.site-header-custom .nav-link:hover,
+.site-header-custom.is-transparent.scrolled .nav-link:hover {
+	color: var(--header-nav-hover-color, #e67e22);
 }
 
 /* Nav chevron */
@@ -349,11 +443,18 @@
 	transition: background .15s;
 }
 
-.lang-menu a:hover { background: #F7F7F5; }
+/* .site-header-custom prefix boosts specificity above Elementor's global
+   kit CSS (".elementor-kit-224 a:hover"), which has the exact same
+   specificity as a plain ".lang-menu a:hover" and was winning the tie
+   by loading later in the cascade, silencing this color entirely. */
+.site-header-custom .lang-menu a:hover {
+	background: #F7F7F5;
+	color: var(--lang-btn-hover-color, #0F0F0F);
+}
 
 .lang-menu a.lang-current {
 	font-weight: 600;
-	color: var(--header-nav-active-color, #F25C05);
+	color: var(--lang-btn-hover-color, #0F0F0F);
 }
 
 @media (max-width: 1024px) {

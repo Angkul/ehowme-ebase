@@ -460,7 +460,7 @@ function hec_enqueue_header_scripts() {
 		'hec-header',
 		get_stylesheet_directory_uri() . '/assets/js/header.js',
 		[],
-		'1.0.0',
+		wp_get_theme()->get( 'Version' ), // was hardcoded '1.0.0' — never busted cache on edits
 		true
 	);
 }

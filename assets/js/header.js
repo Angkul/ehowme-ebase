@@ -16,22 +16,56 @@
 		if (!header) return;
 
 		/* ================================================
-		   Sticky header — add .scrolled class on scroll
-		   ================================================ */
-		if (header.classList.contains('is-sticky')) {
-			var lastScroll = 0;
+		   Sticky / Transparent header — add .scrolled class
+		   once the user leaves the top of the page. Runs for
+		   sticky headers AND transparent headers (transparent
+		   needs it to know when to switch back to solid bg).
 
-			window.addEventListener('scroll', function () {
+		   Previously this ran on every single 'scroll' event and
+		   wrote to classList synchronously — on trackpad/momentum
+		   scrolling that fires dozens of times per second and was
+		   forcing style recalculations mid-scroll, which is what
+		   showed up as stutter/jank (and a whitish flash while the
+		   background-color transition kept restarting). Fixed by:
+		   1) batching to one check per animation frame (rAF)
+		   2) skipping the DOM write entirely when state is unchanged
+		   3) hysteresis (different enter/exit thresholds) so tiny
+		      scroll jitter near one boundary can't flicker the class
+		   ================================================ */
+		if (header.classList.contains('is-sticky') || header.classList.contains('is-transparent')) {
+			var HEC_SCROLLED_ENTER = 60; // px — switch to solid after this
+			var HEC_SCROLLED_EXIT  = 20; // px — switch back to transparent/top state below this
+
+			var hecIsScrolled = null; // unknown yet — forces the first run to apply a state
+			var hecTicking    = false;
+
+			var hecApplyScrollState = function () {
+				hecTicking = false;
 				var currentScroll = window.pageYOffset || document.documentElement.scrollTop;
 
-				if (currentScroll > 10) {
-					header.classList.add('scrolled');
-				} else {
-					header.classList.remove('scrolled');
+				var shouldBeScrolled = hecIsScrolled;
+				if (currentScroll > HEC_SCROLLED_ENTER) {
+					shouldBeScrolled = true;
+				} else if (currentScroll < HEC_SCROLLED_EXIT) {
+					shouldBeScrolled = false;
 				}
 
-				lastScroll = currentScroll <= 0 ? 0 : currentScroll;
-			}, { passive: true });
+				if (shouldBeScrolled === hecIsScrolled) return; // no change — skip the DOM write
+
+				hecIsScrolled = shouldBeScrolled;
+				header.classList.toggle('scrolled', hecIsScrolled);
+			};
+
+			var hecOnScroll = function () {
+				if (hecTicking) return;
+				hecTicking = true;
+				window.requestAnimationFrame(hecApplyScrollState);
+			};
+
+			// Run once on load in case the page opens already scrolled (e.g. #anchor link)
+			hecApplyScrollState();
+
+			window.addEventListener('scroll', hecOnScroll, { passive: true });
 		}
 
 		/* ================================================
