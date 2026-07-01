@@ -70,9 +70,12 @@ class HEC_Theme_Options {
 			'hec_header_height'       => [ 'label' => __( 'Header Height (px)', 'ehowme-ebase' ), 'default' => '70' ],
 			'hec_header_max_width'    => [ 'label' => __( 'Container Max Width (px)', 'ehowme-ebase' ), 'default' => '1200' ],
 			'hec_header_sticky'       => [ 'label' => __( 'Sticky Header', 'ehowme-ebase' ), 'type' => 'checkbox', 'default' => '1' ],
+			'hec_header_transparent'  => [ 'label' => __( 'Transparent Header at Top', 'ehowme-ebase' ), 'type' => 'checkbox', 'default' => '0' ],
+			'hec_header_transparent_nav_color' => [ 'label' => __( 'Nav/Logo Text Color (Transparent State)', 'ehowme-ebase' ), 'type' => 'color', 'default' => '#ffffff' ],
 			'hec_header_bg_color'     => [ 'label' => __( 'Background Color', 'ehowme-ebase' ), 'type' => 'color', 'default' => '#ffffff' ],
 			'hec_header_border_color' => [ 'label' => __( 'Border Color', 'ehowme-ebase' ), 'type' => 'color', 'default' => '#e5e5e5' ],
 			'hec_header_nav_color'    => [ 'label' => __( 'Nav Text Color', 'ehowme-ebase' ), 'type' => 'color', 'default' => '#333333' ],
+			'hec_header_nav_hover_color' => [ 'label' => __( 'Nav Text Hover Color', 'ehowme-ebase' ), 'type' => 'color', 'default' => '#e67e22' ],
 			'hec_header_active_color' => [ 'label' => __( 'Nav Active / Accent Color', 'ehowme-ebase' ), 'type' => 'color', 'default' => '#e67e22' ],
 			'hec_header_logo_height'  => [ 'label' => __( 'Logo Max Height (px)', 'ehowme-ebase' ), 'default' => '50' ],
 			'hec_show_lang_switcher'      => [ 'label' => __( 'Show Language Switcher', 'ehowme-ebase' ), 'type' => 'checkbox', 'default' => '1' ],
@@ -366,6 +369,7 @@ function hec_output_header_css_vars() {
 	$bg_color          = get_option( 'hec_header_bg_color', '#ffffff' );
 	$border_color      = get_option( 'hec_header_border_color', '#e5e5e5' );
 	$nav_color         = get_option( 'hec_header_nav_color', '#333333' );
+	$nav_hover_color   = get_option( 'hec_header_nav_hover_color', '#e67e22' );
 	$active_color      = get_option( 'hec_header_active_color', '#e67e22' );
 	$logo_height       = (int) get_option( 'hec_header_logo_height', 50 );
 	$cta_bg            = get_option( 'hec_cta_bg_color', '#222222' );
@@ -374,6 +378,7 @@ function hec_output_header_css_vars() {
 	$lang_btn_hover_bg       = get_option( 'hec_lang_btn_hover_bg_color', '#f7f7f5' );
 	$lang_btn_hover_border   = get_option( 'hec_lang_btn_hover_border_color', '#E8E8E6' );
 	$lang_btn_hover_color    = get_option( 'hec_lang_btn_hover_color', '#0F0F0F' );
+	$transparent_nav_color   = get_option( 'hec_header_transparent_nav_color', '#ffffff' );
 
 	echo '<style id="hec-header-css-vars">
 	:root {
@@ -382,7 +387,9 @@ function hec_output_header_css_vars() {
 		--header-bg-color: ' . esc_attr( $bg_color ) . ';
 		--header-border-color: ' . esc_attr( $border_color ) . ';
 		--header-nav-color: ' . esc_attr( $nav_color ) . ';
+		--header-nav-hover-color: ' . esc_attr( $nav_hover_color ) . ';
 		--header-nav-active-color: ' . esc_attr( $active_color ) . ';
+		--header-transparent-nav-color: ' . esc_attr( $transparent_nav_color ) . ';
 		--header-logo-height: ' . esc_attr( $logo_height ) . 'px;
 		--header-cta-bg: ' . esc_attr( $cta_bg ) . ';
 		--header-cta-color: #ffffff;

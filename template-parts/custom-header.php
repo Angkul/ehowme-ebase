@@ -9,10 +9,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$is_sticky    = get_option( 'hec_header_sticky', '1' );
-$header_class = 'site-header-custom';
+$is_sticky      = get_option( 'hec_header_sticky', '1' );
+$is_transparent = get_option( 'hec_header_transparent', '0' );
+$header_class   = 'site-header-custom';
 if ( $is_sticky ) {
 	$header_class .= ' is-sticky';
+}
+if ( $is_transparent ) {
+	$header_class .= ' is-transparent';
 }
 ?>
 <header id="site-header" class="<?php echo esc_attr( $header_class ); ?>" role="banner">
