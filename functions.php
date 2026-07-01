@@ -90,10 +90,10 @@ if ( is_admin() && EBASE_GITHUB_USER && EBASE_GITHUB_REPO ) {
 	$_puc_dir  = get_stylesheet_directory() . '/inc/plugin-update-checker';
 	$_puc_path = $_puc_dir . '/plugin-update-checker.php';
 	if ( file_exists( $_puc_path ) ) {
-		// โหลด Composer vendor autoloader ก่อน (Parsedown และ dependency อื่นๆ)
-		$_puc_vendor = $_puc_dir . '/vendor/autoload.php';
-		if ( file_exists( $_puc_vendor ) ) {
-			require_once $_puc_vendor;
+		// โหลด Parsedown ก่อน (PUC 5.7 ใส่ไว้ใน vendor/ ตรงๆ ไม่ใช่ Composer)
+		$_parsedown = $_puc_dir . '/vendor/Parsedown.php';
+		if ( file_exists( $_parsedown ) ) {
+			require_once $_parsedown;
 		}
 		require_once $_puc_path;
 		$_ebase_updater = YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
