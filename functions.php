@@ -87,8 +87,14 @@ require_once get_stylesheet_directory() . '/inc/header-functions.php';
 
 // GitHub Auto-Updater via Plugin Update Checker (admin only)
 if ( is_admin() && EBASE_GITHUB_USER && EBASE_GITHUB_REPO ) {
-	$_puc_path = get_stylesheet_directory() . '/inc/plugin-update-checker/plugin-update-checker.php';
+	$_puc_dir  = get_stylesheet_directory() . '/inc/plugin-update-checker';
+	$_puc_path = $_puc_dir . '/plugin-update-checker.php';
 	if ( file_exists( $_puc_path ) ) {
+		// โหลด Composer vendor autoloader ก่อน (Parsedown และ dependency อื่นๆ)
+		$_puc_vendor = $_puc_dir . '/vendor/autoload.php';
+		if ( file_exists( $_puc_vendor ) ) {
+			require_once $_puc_vendor;
+		}
 		require_once $_puc_path;
 		$_ebase_updater = YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
 			'https://github.com/' . EBASE_GITHUB_USER . '/' . EBASE_GITHUB_REPO . '/',
