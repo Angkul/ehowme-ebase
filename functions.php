@@ -73,15 +73,16 @@ function hec_theme_setup() {
    3. LOAD INCLUDES
    ============================================= */
 
-// Config (GitHub updater credentials) — สร้างไฟล์นี้ก่อน deploy
-// ถ้าไม่มีไฟล์ (เช่น install จาก zip) ให้ define ค่าว่างไว้ก่อน updater จะถูก skip อัตโนมัติ
+// GitHub repo (public) — hardcoded ไว้เลย ลูกค้าไม่ต้องตั้งค่าอะไร
+// ebase-config.php เป็น optional สำหรับ override หรือใส่ PAT (private repo)
+if ( ! defined( 'EBASE_GITHUB_USER' ) ) define( 'EBASE_GITHUB_USER', 'Angkul' );
+if ( ! defined( 'EBASE_GITHUB_REPO' ) ) define( 'EBASE_GITHUB_REPO', 'ehowme-ebase' );
+if ( ! defined( 'EBASE_GITHUB_PAT' ) )  define( 'EBASE_GITHUB_PAT', '' );
+
+// โหลด ebase-config.php ถ้ามี (override ค่าข้างบน หรือใส่ PAT สำหรับ private fork)
 $_ebase_config = get_stylesheet_directory() . '/ebase-config.php';
 if ( file_exists( $_ebase_config ) ) {
 	require_once $_ebase_config;
-} else {
-	if ( ! defined( 'EBASE_GITHUB_USER' ) ) define( 'EBASE_GITHUB_USER', '' );
-	if ( ! defined( 'EBASE_GITHUB_REPO' ) ) define( 'EBASE_GITHUB_REPO', '' );
-	if ( ! defined( 'EBASE_GITHUB_PAT' ) )  define( 'EBASE_GITHUB_PAT', '' );
 }
 
 // Language helper (ต้องโหลดก่อน theme options)
