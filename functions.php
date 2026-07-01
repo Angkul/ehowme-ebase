@@ -73,7 +73,7 @@ function hec_theme_setup() {
    3. LOAD INCLUDES
    ============================================= */
 
-// Language helper (ต้องโหลดก่อน theme options)
+// Config (GitHub updater credentials) — สร้างไฟล์นี้ก่อน deploy
 require_once get_stylesheet_directory() . '/ebase-config.php';
 
 // Language helper (ต้องโหลดก่อน theme options)
@@ -168,7 +168,7 @@ function hec_sync_logo_to_wp_custom_logo( $option, $old_value, $new_value ) {
 add_filter( 'hello_elementor_header_footer', '__return_false' );
 
 /* =============================================
-   5. POLYLANG — ลงทะเบียน strings ที่แปลได้
+   6. POLYLANG — ลงทะเบียน strings ที่แปลได้
    ============================================= */
 
 add_action( 'init', 'hec_register_polylang_strings' );
@@ -189,7 +189,7 @@ function hec_register_polylang_strings() {
 }
 
 /* =============================================
-   6. WPML — string translation filter
+   7. WPML — string translation filter
    ============================================= */
 
 add_filter( 'hec_cta_label', 'hec_wpml_translate_string', 10, 2 );
@@ -203,7 +203,7 @@ function hec_wpml_translate_string( $value, $name ) {
 }
 
 /* =============================================
-   7. BODY CLASS — เพิ่ม language class
+   8. BODY CLASS — เพิ่ม language class
    ============================================= */
 
 add_filter( 'body_class', 'hec_body_lang_class' );
@@ -222,14 +222,14 @@ function hec_body_lang_class( $classes ) {
 }
 
 /* =============================================
-   8. REMOVE HELLO ELEMENTOR PAGE TITLE
+   9. REMOVE HELLO ELEMENTOR PAGE TITLE
    (optional — uncomment ถ้าต้องการ)
    ============================================= */
 
 // add_filter( 'hello_elementor_page_title', '__return_false' );
 
 /* =============================================
-   9. ADD HREFLANG TAGS (SEO)
+   10. ADD HREFLANG TAGS (SEO)
    ============================================= */
 
 add_action( 'wp_head', 'hec_output_hreflang_tags' );
