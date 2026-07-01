@@ -74,7 +74,15 @@ function hec_theme_setup() {
    ============================================= */
 
 // Config (GitHub updater credentials) — สร้างไฟล์นี้ก่อน deploy
-require_once get_stylesheet_directory() . '/ebase-config.php';
+// ถ้าไม่มีไฟล์ (เช่น install จาก zip) ให้ define ค่าว่างไว้ก่อน updater จะถูก skip อัตโนมัติ
+$_ebase_config = get_stylesheet_directory() . '/ebase-config.php';
+if ( file_exists( $_ebase_config ) ) {
+	require_once $_ebase_config;
+} else {
+	if ( ! defined( 'EBASE_GITHUB_USER' ) ) define( 'EBASE_GITHUB_USER', '' );
+	if ( ! defined( 'EBASE_GITHUB_REPO' ) ) define( 'EBASE_GITHUB_REPO', '' );
+	if ( ! defined( 'EBASE_GITHUB_PAT' ) )  define( 'EBASE_GITHUB_PAT', '' );
+}
 
 // Language helper (ต้องโหลดก่อน theme options)
 require_once get_stylesheet_directory() . '/inc/language-helper.php';
