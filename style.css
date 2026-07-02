@@ -5,7 +5,7 @@
  Author:       eHowMe
  Author URI:   https://www.ehowme.com/
  Template:     hello-elementor
- Version:      1.1.1
+ Version:      1.1.2
  License:      GNU General Public License v3 or later
  License URI:  http://www.gnu.org/licenses/gpl-3.0.html
  Text Domain:  ehowme-ebase
@@ -858,6 +858,28 @@ a.ofc-hdr-title:hover {
 	color: #111;
 }
 
+/* Fix: the back/close icon SVGs were rendering at 0px width (invisible)
+   inside these buttons. Root cause: .ofc-back/.ofc-close are
+   `display:flex; justify-content:center` with the <svg> as their ONLY
+   child and no `gap`/padding-driven content width — with no CSS width
+   on the <svg> itself (only its HTML width/height attributes, which
+   flexbox's `flex-basis:auto` does not reliably resolve to for a bare
+   SVG), the flex algorithm computed its basis as ~0 and let it shrink
+   to nothing. Confirmed live via getComputedStyle() on stg2.angkul.com
+   (0px, sometimes a few px depending on sibling layout). Giving the
+   SVG an explicit CSS size + flex-shrink:0 makes sizing deterministic
+   regardless of flex-basis ambiguity. */
+#hec-offcanvas .ofc-back svg {
+	width: 20px;
+	height: 20px;
+	flex-shrink: 0;
+}
+#hec-offcanvas .ofc-close svg {
+	width: 18px;
+	height: 18px;
+	flex-shrink: 0;
+}
+
 /* List */
 .ofc-list {
 	list-style: none;
@@ -916,4 +938,11 @@ a.ofc-hdr-title:hover {
 #hec-offcanvas .ofc-trigger:hover {
 	background: #fef9f5;
 	color: var(--header-nav-active-color, #2254c5);
+}
+
+/* Same 0-width SVG issue as .ofc-back/.ofc-close above — see comment there. */
+#hec-offcanvas .ofc-trigger svg {
+	width: 18px;
+	height: 18px;
+	flex-shrink: 0;
 }

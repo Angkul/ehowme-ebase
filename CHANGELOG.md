@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.1.2] - 2026-07-03
+
+### Fixed
+- Mobile off-canvas menu icons (back arrow, close X, submenu chevron) rendering invisible — their `<svg>` computed width was collapsing to 0px (sometimes a few px) because `.ofc-back`/`.ofc-close`/`.ofc-trigger` are `display:flex; justify-content:center` buttons with the SVG as their only child, and flexbox's `flex-basis:auto` doesn't reliably resolve to an SVG's own width/height *attributes* (only a CSS `width` would count). Fixed by giving each icon an explicit CSS width/height + `flex-shrink:0`. Confirmed via computed-style inspection and visual zoom on stg2.angkul.com/en/.
+
 ## [1.1.1] - 2026-07-03
 
 ### Changed
