@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.1.1] - 2026-07-03
+
+### Changed
+- Per-language Header Menu / Mobile Menu fields moved from the "Multi-Language" tab into the "Menus" tab (grouped under the existing Default fields, with a "— TH —" / "— EN —" divider per language), so all menu-related settings live in one place instead of being split across two tabs. No change to option keys or fallback behavior — purely a Theme Options UI reorganization.
+
 ## [1.1.0] - 2026-07-02
 
 ### Added

@@ -177,6 +177,30 @@
 	border-bottom: none;
 }
 
+/* Per-language menu heading rows (Menus tab): "— TH —" / "— EN —" dividers */
+.hec-tab-panel .form-table tr.hec-menu-lang-heading-row {
+	border-bottom: none;
+}
+
+.hec-tab-panel .form-table tr.hec-menu-lang-heading-row th {
+	padding-top: 20px;
+	padding-bottom: 4px;
+	font-size: 11px;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: #8a8a86;
+	font-weight: 700;
+	border-top: 1px solid #ececeb;
+}
+
+.hec-tab-panel .form-table tr.hec-menu-lang-heading-row td {
+	display: none;
+}
+
+.hec-field-heading-td {
+	display: none;
+}
+
 .hec-save-bar {
 	padding: 16px 24px;
 	background: #fafafa;
