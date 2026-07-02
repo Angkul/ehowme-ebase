@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.0.7] - 2026-07-02
+
+### Fixed
+- Transparent header showing as solid white instead of overlapping the hero. Two compounding causes: (1) the rule that pulls page content up under the header targeted `#content`, which only exists on templates that go through the theme's own `template-parts/*.php` — any page actually built with Elementor (the normal case) renders its own wrapper instead, so the rule never matched there; (2) on sites using the off-canvas mobile menu (Sidebar Right/Left), `template-parts/custom-header.php` also emits `#hec-drawer-overlay` and `#hec-offcanvas` right after `</header>`, so a naive "next sibling" fix pulled those up instead of the real content. Now explicitly targets the real content root in every combination header.php can produce (Elementor-rendered pages, theme-template pages, dropdown menu, off-canvas menu). Verified on both a dropdown-menu site (stg2.angkul.com) and an off-canvas-menu site (localhost).
+- Header buttons (`.lang-btn`, `.mobile-menu-toggle`, and the off-canvas `.ofc-back`/`.ofc-close`/`.ofc-trigger`) silently losing their font-size/border-radius/padding/border to Elementor's global kit CSS (`.elementor-kit-4 button, ...`), which is more specific than a bare single-class selector. Scoped each under its stable container id (`#site-header`, `#hec-offcanvas`) instead of adding `!important`, since an id always outranks any number of classes/types.
+- Elementor-built mega menu content inheriting `.header-nav ul li a`'s padding/color/font-size (10px 18px, etc.) even when the Elementor container itself was set to 0 padding. That selector is a plain descendant selector, so it matched any `<a>` nested in a `<ul><li>` anywhere inside `.header-nav`, including Elementor widgets (icon lists, nav menus, ...) rendered inside the mega panel's Elementor-template mode (`.mega-elementor-wrap`, see `HEC_Nav_Walker`). Added a `:not(.mega-elementor-wrap a)` exclusion so the rule stays scoped to the theme's own nav markup and leaves Elementor-authored content alone.
+
 ## [1.0.6] - 2026-07-02
 
 ### Fixed

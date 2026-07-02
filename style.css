@@ -5,7 +5,7 @@
  Author:       eHowMe
  Author URI:   https://www.ehowme.com/
  Template:     hello-elementor
- Version:      1.0.6
+ Version:      1.0.7
  License:      GNU General Public License v3 or later
  License URI:  http://www.gnu.org/licenses/gpl-3.0.html
  Text Domain:  ehowme-ebase
@@ -87,8 +87,30 @@ body.admin-bar .site-header-custom {
    (one-time, static — not scroll-linked) so the header overlays
    whatever's at the top of the page (e.g. a hero image) instead of
    sitting in front of blank space. Body class is added by
-   hec_body_lang_class() in functions.php. */
-body.hec-transparent-header #content {
+   hec_body_lang_class() in functions.php.
+
+   Targets "whatever comes right after the header" via the adjacent-
+   sibling combinator instead of a hardcoded #content — #content only
+   exists on the handful of templates that go through the theme's own
+   template-parts/*.php (template-parts/single.php etc.). Any page
+   rendered by Elementor itself outputs its own wrapper instead
+   (e.g. <div class="elementor elementor-23">) with no #content in
+   sight, so a hardcoded #content selector silently never matches
+   there and the "transparent" header just sits on blank white space
+   instead of overlapping the hero.
+
+   BUT the header's literal next sibling isn't always the real content
+   either: when the mobile menu style isn't "dropdown",
+   template-parts/custom-header.php also emits #hec-drawer-overlay
+   (+ #hec-offcanvas, if the assigned menu actually has items) right
+   after </header> — both fixed-position elements, not the page
+   content. The three rules below cover every combination header.php
+   can actually produce: no overlay markup at all, overlay with no
+   off-canvas panel (empty/unset mobile menu), and overlay + panel
+   together — in each case landing on the real first content element. */
+body.hec-transparent-header .site-header-custom + *:not(#hec-drawer-overlay),
+body.hec-transparent-header .site-header-custom + #hec-drawer-overlay + *:not(#hec-offcanvas),
+body.hec-transparent-header .site-header-custom + #hec-drawer-overlay + #hec-offcanvas + * {
 	margin-top: calc(-1 * var(--header-height, 70px));
 }
 
@@ -162,7 +184,18 @@ body.hec-transparent-header #content {
 	position: relative;
 }
 
-.header-nav ul li a {
+/* :not(.mega-elementor-wrap a) — when a mega menu item is built with
+   an Elementor template (see HEC_Nav_Walker::start_el() /
+   .mega-elementor-wrap in header-functions.php), Elementor's own
+   widgets frequently render their own <ul><li><a> markup (icon
+   lists, nav menus, ...) INSIDE that wrapper, which lives inside
+   .header-nav. Being a plain descendant selector, this rule used to
+   match those too and leak padding/color/font-size onto them even
+   when the Elementor container itself was set to 0 padding — the
+   exclusion keeps this rule scoped to our own nav markup
+   (.nav-link, .nav-dropdown-link, .mega-link, ...) and leaves
+   Elementor-authored content alone. */
+.header-nav ul li a:not(.mega-elementor-wrap a) {
 	display: block;
 	padding: 10px 18px;
 	color: var(--header-nav-color, #333333);
@@ -173,8 +206,8 @@ body.hec-transparent-header #content {
 	white-space: nowrap;
 }
 
-.header-nav ul li a:hover,
-.header-nav ul li.current-menu-item > a {
+.header-nav ul li a:not(.mega-elementor-wrap a):hover,
+.header-nav ul li.current-menu-item > a:not(.mega-elementor-wrap a) {
 	color: var(--header-nav-active-color, #2254c5);
 }
 
@@ -387,7 +420,16 @@ body.hec-transparent-header #content {
 .lang-menu, .lang-menu a { list-style: none; }
 .lang-btn img, .lang-menu a img { width: 18px; height: auto; vertical-align: middle; border-radius: 2px; }
 
-.lang-btn {
+/* Scoped under #site-header (an id, so specificity (1,1,0)) instead of
+   a bare .lang-btn (0,1,0) — Elementor's global kit CSS resets buttons
+   via compound selectors like ".elementor-kit-4 button" (0,1,1), which
+   otherwise wins on shared properties (font-size, border-radius,
+   padding, ...) since it has more classes/types than a single class
+   selector. An id beats any number of classes/types without needing
+   !important, and #site-header is already a stable id on the header
+   markup (see template-parts/custom-header.php), not a hack added
+   just for this. */
+#site-header .lang-btn {
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -403,8 +445,8 @@ body.hec-transparent-header #content {
 	transition: .2s;
 }
 
-.lang-btn:hover,
-.lang-btn:focus {
+#site-header .lang-btn:hover,
+#site-header .lang-btn:focus {
 	border-color: var(--lang-btn-hover-border-color, #E8E8E6);
 	color: var(--lang-btn-hover-color, #0F0F0F);
 	background: var(--lang-btn-hover-bg-color, #f7f7f5);
@@ -491,8 +533,10 @@ body.hec-transparent-header #content {
 	transform: translateX(2px);
 }
 
-/* Mobile Menu Toggle */
-.mobile-menu-toggle {
+/* Mobile Menu Toggle — scoped under #site-header for the same reason
+   as .lang-btn above (beats Elementor's ".elementor-kit-4 button"
+   reset on padding/border without !important). */
+#site-header .mobile-menu-toggle {
 	display: none;
 	flex-direction: column;
 	gap: 5px;
@@ -529,7 +573,11 @@ body.hec-transparent-header #content {
 @media (max-width: 991px) {
 	.header-nav { display: none !important; }
 	.header-actions { display: flex; gap: 8px; align-items: center; }
-	.mobile-menu-toggle { display: flex; }
+	/* Must match #site-header .mobile-menu-toggle's specificity (1,1,0) —
+	   the base rule now scopes under #site-header (see above), and a
+	   bare .mobile-menu-toggle here would lose to it and stay
+	   display:none on mobile. */
+	#site-header .mobile-menu-toggle { display: flex; }
 	/* Was `position: relative` — that overrode the base sticky header
 	   on every mobile screen, so the header scrolled away with the page
 	   instead of sticking, and never showed the transparent→solid
@@ -760,8 +808,13 @@ body.hec-transparent-header #content {
 a.ofc-hdr-title:hover {
 	color: var(--header-nav-active-color, #2254c5);
 }
-.ofc-back,
-.ofc-close {
+/* Scoped under #hec-offcanvas (an id) for the same reason as
+   #site-header .lang-btn above — beats Elementor's global button
+   reset on border/border-radius without !important. The :hover rules
+   need the same scoping, otherwise they'd be LESS specific than the
+   scoped base rule above and the hover state would never show. */
+#hec-offcanvas .ofc-back,
+#hec-offcanvas .ofc-close {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -775,8 +828,8 @@ a.ofc-hdr-title:hover {
 	flex-shrink: 0;
 	transition: background 0.15s, color 0.15s;
 }
-.ofc-back:hover,
-.ofc-close:hover {
+#hec-offcanvas .ofc-back:hover,
+#hec-offcanvas .ofc-close:hover {
 	background: #f5f5f5;
 	color: #111;
 }
@@ -821,8 +874,9 @@ a.ofc-hdr-title:hover {
 	font-weight: 600;
 }
 
-/* Chevron trigger button */
-.ofc-trigger {
+/* Chevron trigger button — scoped under #hec-offcanvas, same reason
+   as .ofc-back/.ofc-close above. */
+#hec-offcanvas .ofc-trigger {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -835,7 +889,7 @@ a.ofc-hdr-title:hover {
 	color: #bbb;
 	transition: color 0.15s, background 0.15s;
 }
-.ofc-trigger:hover {
+#hec-offcanvas .ofc-trigger:hover {
 	background: #fef9f5;
 	color: var(--header-nav-active-color, #2254c5);
 }
