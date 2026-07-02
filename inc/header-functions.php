@@ -161,11 +161,79 @@ function hec_header_cta_button() {
  *
  * การใช้งาน Mega Menu:
  * 1. ไปที่ Appearance → Menus
- * 2. เปิด "CSS Classes" ใน Screen Options
- * 3. Top-level item ที่ต้องการ mega menu → ใส่ class: has-mega
- * 4. Sub-items level 2 = Column Header (ใส่ Description เป็น subtitle ได้)
- * 5. Sub-items level 3 = Links ใต้ column
+ * 2. Top-level item ที่ต้องการ mega menu → ติ๊ก "Enable Mega Menu" ในกล่อง
+ *    แก้ไข item เลย (เพิ่มโดย hec_mega_menu_checkbox_field() ด้านล่าง) —
+ *    หรือจะใส่ CSS class "has-mega" เองผ่าน Screen Options → CSS Classes
+ *    แบบเดิมก็ยังใช้ได้ ทั้งสองทางควบคุม class ตัวเดียวกัน ผสมกันได้
+ * 3. Sub-items level 2 = Column Header (ใส่ Description เป็น subtitle ได้)
+ * 4. Sub-items level 3 = Links ใต้ column
+ * 5. หรือใส่ Description ของ top-level item เป็น "elementor:ID" เพื่อใช้
+ *    Elementor template แทนทั้ง panel
  */
+
+/**
+ * เพิ่ม checkbox "Enable Mega Menu" ในกล่องแก้ไข menu item ที่
+ * Appearance → Menus (เฉพาะ top-level item — mega menu ใช้ได้แค่ depth 0)
+ */
+add_action( 'wp_nav_menu_item_custom_fields', 'hec_mega_menu_checkbox_field', 10, 4 );
+function hec_mega_menu_checkbox_field( $item_id, $item, $depth, $args ) {
+	if ( 0 !== $depth ) {
+		return;
+	}
+
+	$checked = in_array( 'has-mega', (array) $item->classes, true );
+	?>
+	<p class="field-hec-mega description description-wide">
+		<label for="edit-menu-item-hec-mega-<?php echo esc_attr( $item_id ); ?>">
+			<input type="checkbox"
+			       id="edit-menu-item-hec-mega-<?php echo esc_attr( $item_id ); ?>"
+			       name="menu-item-hec-mega[<?php echo esc_attr( $item_id ); ?>]"
+			       value="1"
+			       <?php checked( $checked ); ?> />
+			<?php esc_html_e( 'Enable Mega Menu', 'ehowme-ebase' ); ?>
+		</label>
+		<br>
+		<span class="description">
+			<?php esc_html_e( 'Level-2 sub-items become column headers, level-3 become links under each column. Or set this item\'s Description to "elementor:ID" to render an Elementor template as the whole panel instead.', 'ehowme-ebase' ); ?>
+		</span>
+	</p>
+	<?php
+}
+
+/**
+ * บันทึก checkbox ด้านบน — toggle class "has-mega" ใน _menu_item_classes
+ * ที่ WP core save ไปแล้วตอนนี้ (จาก field CSS Classes แบบข้อความ) แทนที่
+ * จะเขียนทับทั้ง array เอง เพื่อไม่ให้ class อื่นที่ผู้ใช้พิมพ์เองหายไป.
+ *
+ * เช็ก menu-item-title[$menu_item_db_id] แทนการเช็ก
+ * menu-item-hec-mega ตรงๆ เพราะถ้าไม่ติ๊กอะไรเลยสักช่อง (ปิด mega ทุก
+ * item) ทั้ง array menu-item-hec-mega จะไม่ถูกส่งมาใน $_POST เลย —
+ * ถ้าเช็กจาก key นั้นตรงๆ จะพลาดไม่ลบ has-mega ออกในกรณีนี้.
+ * menu-item-title ถูกส่งมาเสมอสำหรับทุก item ที่ผ่านฟอร์มนี้จริง
+ * ไม่ว่าจะติ๊กอะไรไว้หรือไม่.
+ */
+add_action( 'wp_update_nav_menu_item', 'hec_save_mega_menu_checkbox', 10, 2 );
+function hec_save_mega_menu_checkbox( $menu_id, $menu_item_db_id ) {
+	if ( ! isset( $_POST['menu-item-title'][ $menu_item_db_id ] ) ) {
+		return;
+	}
+	if ( ! current_user_can( 'edit_theme_options' ) ) {
+		return;
+	}
+
+	$classes = get_post_meta( $menu_item_db_id, '_menu_item_classes', true );
+	$classes = is_array( $classes ) ? $classes : [];
+	$classes = array_values( array_filter( $classes, function ( $c ) {
+		return '' !== $c && 'has-mega' !== $c;
+	} ) );
+
+	if ( ! empty( $_POST['menu-item-hec-mega'][ $menu_item_db_id ] ) ) {
+		$classes[] = 'has-mega';
+	}
+
+	update_post_meta( $menu_item_db_id, '_menu_item_classes', $classes );
+}
+
 class HEC_Nav_Walker extends Walker_Nav_Menu {
 
 	/** ตรวจว่า item หรือ parent มี class has-mega ไหม */

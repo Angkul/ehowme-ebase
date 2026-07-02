@@ -5,7 +5,7 @@
  Author:       eHowMe
  Author URI:   https://www.ehowme.com/
  Template:     hello-elementor
- Version:      1.0.8
+ Version:      1.0.9
  License:      GNU General Public License v3 or later
  License URI:  http://www.gnu.org/licenses/gpl-3.0.html
  Text Domain:  ehowme-ebase
@@ -300,17 +300,20 @@ body.hec-transparent-header .site-header-custom + #hec-drawer-overlay + #hec-off
 
 .mega-panel {
 	position: absolute;
-	/* Was "calc(100% + 1px)" — that 1px gap between the trigger <li>
-	   and the panel was enough for the cursor to land in a dead zone
-	   while moving from the link down into the panel, dropping the
-	   :hover state and slamming the panel shut (pointer-events:none
-	   kicks in the instant :hover stops matching, so it also became
-	   unclickable mid-transition). Flush top:100% removes the gap;
-	   the .mega-open JS hover-intent below (see assets/js/header.js)
-	   is the real fix for fast/diagonal mouse movement. */
-	top: 100%;
+	/* Configurable via Theme Options → Menus (--mega-panel-top-offset,
+	   default 0px = flush against the trigger). Was a hardcoded
+	   "calc(100% + 1px)" — that 1px gap was enough for the cursor to
+	   land in a dead zone while moving from the link down into the
+	   panel, dropping the :hover state and slamming the panel shut
+	   (pointer-events:none kicks in the instant :hover stops
+	   matching, so it also became unclickable mid-transition). If
+	   this offset is set to a non-zero value again, the .mega-open
+	   JS hover-intent below (see assets/js/header.js) is what
+	   actually protects against that — it doesn't care how big the
+	   gap is, only whether the mouse comes back within 250ms. */
+	top: calc(100% + var(--mega-panel-top-offset, 0px));
 	left: 50%;
-	width: 760px;
+	width: var(--mega-panel-width, 760px);
 	max-width: 96vw;
 	background: #fff;
 	border: 1px solid var(--header-border-color, #e8e8e6);

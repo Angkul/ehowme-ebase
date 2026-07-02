@@ -136,6 +136,18 @@ class HEC_Theme_Options {
 					'sidebar-left'  => __( 'Side Drawer — Left', 'ehowme-ebase' ),
 				],
 			],
+
+			// ── Mega Panel ──
+			'hec_mega_panel_top_offset' => [
+				'section' => 'menu',
+				'label'   => __( 'Mega Panel Top Offset (e.g. 0px, 1px, -2px)', 'ehowme-ebase' ),
+				'default' => '0px',
+			],
+			'hec_mega_panel_width' => [
+				'section' => 'menu',
+				'label'   => __( 'Mega Panel Width (e.g. 760px)', 'ehowme-ebase' ),
+				'default' => '760px',
+			],
 		];
 
 		foreach ( $this->get_tabs() as $tab_id => $tab_label ) {
@@ -469,6 +481,8 @@ function hec_output_header_css_vars() {
 	$cta_btn_radius          = hec_css_length( get_option( 'hec_cta_btn_radius', '30px' ), '30px' );
 	$transparent_nav_color   = get_option( 'hec_header_transparent_nav_color', '#ffffff' );
 	$transparent_nav_hover_color = get_option( 'hec_header_transparent_nav_hover_color', '#ffffff' );
+	$mega_panel_top_offset = hec_css_length( get_option( 'hec_mega_panel_top_offset', '0px' ), '0px' );
+	$mega_panel_width      = hec_css_length( get_option( 'hec_mega_panel_width', '760px' ), '760px' );
 
 	echo '<style id="hec-header-css-vars">
 	:root {
@@ -481,6 +495,8 @@ function hec_output_header_css_vars() {
 		--header-nav-active-color: ' . esc_attr( $active_color ) . ';
 		--header-transparent-nav-color: ' . esc_attr( $transparent_nav_color ) . ';
 		--header-transparent-nav-hover-color: ' . esc_attr( $transparent_nav_hover_color ) . ';
+		--mega-panel-top-offset: ' . esc_attr( $mega_panel_top_offset ) . ';
+		--mega-panel-width: ' . esc_attr( $mega_panel_width ) . ';
 		--header-logo-height: ' . esc_attr( $logo_height ) . 'px;
 		--header-cta-bg: ' . esc_attr( $cta_bg ) . ';
 		--header-cta-hover-bg: ' . esc_attr( $cta_hover_bg ) . ';

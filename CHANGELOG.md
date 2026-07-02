@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.0.9] - 2026-07-02
+
+### Added
+- **Mega Panel Top Offset** and **Mega Panel Width** theme options (Menus tab) — the mega menu panel's vertical offset and width are no longer hardcoded, wired through `--mega-panel-top-offset`/`--mega-panel-width` CSS variables. Note: if the offset is set back to a non-zero gap, the JS hover-intent delay added in 1.0.8 (not the gap size) is what actually protects against the panel closing before the mouse reaches it.
+- **"Enable Mega Menu" checkbox** on Appearance → Menus for top-level menu items, instead of requiring the `has-mega` CSS class to be typed manually via Screen Options → CSS Classes. Both methods control the same underlying class and can be mixed — the checkbox toggles `has-mega` on top of whatever's already saved from the CSS Classes field without clobbering other manually-added classes.
+
 ## [1.0.8] - 2026-07-02
 
 ### Added
