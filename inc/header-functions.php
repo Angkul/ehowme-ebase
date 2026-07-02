@@ -25,7 +25,11 @@ add_action( 'after_setup_theme', 'hec_register_menus' );
  * ถ้าไม่ได้ตั้งค่าใน options จะใช้ location 'hec-header-menu'
  */
 function hec_get_header_menu_id() {
-	$menu_id = get_option( 'hec_header_menu', '' );
+	// รองรับ multi-language: ถ้ามี option เฉพาะภาษาปัจจุบัน (เช่น hec_header_menu_en)
+	// จะใช้ค่านั้นก่อน ไม่งั้น fallback ไปที่ hec_header_menu (default)
+	$menu_id = function_exists( 'hec_get_multilang_option' )
+		? hec_get_multilang_option( 'hec_header_menu', '' )
+		: get_option( 'hec_header_menu', '' );
 	if ( $menu_id ) {
 		return (int) $menu_id;
 	}
@@ -397,7 +401,10 @@ class HEC_Nav_Walker extends Walker_Nav_Menu {
  * Get mobile menu ID — falls back to desktop menu if not set
  */
 function hec_get_mobile_menu_id() {
-	$mobile_id = get_option( 'hec_mobile_menu_id', '' );
+	// รองรับ multi-language เช่นเดียวกับ hec_get_header_menu_id()
+	$mobile_id = function_exists( 'hec_get_multilang_option' )
+		? hec_get_multilang_option( 'hec_mobile_menu_id', '' )
+		: get_option( 'hec_mobile_menu_id', '' );
 	return $mobile_id ? (int) $mobile_id : hec_get_header_menu_id();
 }
 

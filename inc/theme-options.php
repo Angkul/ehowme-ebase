@@ -118,10 +118,10 @@ class HEC_Theme_Options {
 			'hec_cta_btn_radius'     => [ 'section' => 'cta', 'label' => __( 'CTA Button Border Radius (e.g. 30px or 50%)', 'ehowme-ebase' ), 'default' => '30px' ],
 
 			// ── เมนู ──
-			'hec_header_menu'       => [ 'section' => 'menu', 'label' => __( 'Header Menu', 'ehowme-ebase' ), 'type' => 'menu_select', 'default' => '' ],
+			'hec_header_menu'       => [ 'section' => 'menu', 'label' => __( 'Header Menu (Default)', 'ehowme-ebase' ), 'type' => 'menu_select', 'default' => '' ],
 			'hec_mobile_menu_id'    => [
 				'section' => 'menu',
-				'label'   => __( 'Mobile Menu (leave blank to use Header Menu)', 'ehowme-ebase' ),
+				'label'   => __( 'Mobile Menu (Default — leave blank to use Header Menu)', 'ehowme-ebase' ),
 				'type'    => 'menu_select',
 				'default' => '',
 			],
@@ -150,6 +150,9 @@ class HEC_Theme_Options {
 			],
 		];
 
+		// หมายเหตุ: ต้องการเมนู (Header/Mobile) แยกตามภาษา? ไปที่ tab "Multi-Language"
+		// ด้านล่างจะมีช่องเลือกเมนูแยกต่อภาษาที่ active อยู่ ถ้าเว้นว่างจะ fallback มาใช้ค่า Default ที่นี่
+
 		foreach ( $this->get_tabs() as $tab_id => $tab_label ) {
 			if ( 'multilang' === $tab_id ) {
 				continue; // จัดการแยกด้านล่าง (ต้อง render คำอธิบาย plugin ที่ตรวจเจอ)
@@ -174,6 +177,13 @@ class HEC_Theme_Options {
 				"hec_cta_label{$suffix}" => [ 'label' => sprintf( __( 'CTA Button Label [%s]', 'ehowme-ebase' ), $lang_label ), 'default' => __( 'Contact Us', 'ehowme-ebase' ) ],
 				"hec_cta_url{$suffix}"   => [ 'label' => sprintf( __( 'CTA Button URL [%s]', 'ehowme-ebase' ), $lang_label ), 'type' => 'url', 'default' => home_url( '/contact' ) ],
 			];
+
+			// Header/Mobile Menu ต่อภาษา — เพิ่มเฉพาะตอนมี multilang plugin จริง (suffix ไม่ว่าง)
+			// เพราะไม่งั้น key จะชนกับ hec_header_menu / hec_mobile_menu_id (Default) ที่อยู่ใน tab "menu" อยู่แล้ว
+			if ( $suffix ) {
+				$ml_fields["hec_header_menu{$suffix}"]    = [ 'label' => sprintf( __( 'Header Menu [%s] (leave blank = use Default)', 'ehowme-ebase' ), $lang_label ), 'type' => 'menu_select', 'default' => '' ];
+				$ml_fields["hec_mobile_menu_id{$suffix}"] = [ 'label' => sprintf( __( 'Mobile Menu [%s] (leave blank = use Header Menu [%s])', 'ehowme-ebase' ), $lang_label, $lang_label ), 'type' => 'menu_select', 'default' => '' ];
+			}
 
 			foreach ( $ml_fields as $key => $args ) {
 				register_setting( self::OPTION_GROUP, $key, [ 'sanitize_callback' => [ $this, 'sanitize_option' ] ] );

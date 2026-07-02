@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.1.0] - 2026-07-02
+
+### Added
+- **Per-language Header Menu / Mobile Menu** — new fields on the "Multi-Language" tab (`Header Menu [XX]`, `Mobile Menu [XX]`, one pair per active Polylang language) let each language use a completely different WordPress menu. Falls back to the existing "Header Menu (Default)" / "Mobile Menu (Default)" fields on the Menus tab when left blank, so sites not using per-language menus are unaffected. Implemented via the theme's existing `hec_get_multilang_option()` helper (already used for CTA label/URL) — `hec_get_header_menu_id()` and `hec_get_mobile_menu_id()` now check for a `_{lang}` suffixed option first.
+
 ## [1.0.9] - 2026-07-02
 
 ### Added
