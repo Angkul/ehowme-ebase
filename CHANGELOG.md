@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.1.3] - 2026-07-03
+
+### Fixed
+- Console warning "Blocked aria-hidden on an element because its descendant retained focus" when closing the off-canvas mobile menu with keyboard focus still on a `.ofc-trigger` button inside it. `closeOfc()` now moves focus back to the hamburger toggle before setting `aria-hidden="true"` on `#hec-offcanvas`, so the attribute is never applied to an ancestor of the focused element.
+
 ## [1.1.2] - 2026-07-03
 
 ### Fixed

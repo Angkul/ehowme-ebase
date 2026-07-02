@@ -141,6 +141,15 @@
 			}
 
 			function closeOfc() {
+				// Move focus out of the panel BEFORE hiding it. Setting
+				// aria-hidden on an ancestor of the currently-focused element
+				// is invalid per WAI-ARIA, and Chrome refuses to apply it
+				// (logging "Blocked aria-hidden...") if e.g. the user tabbed
+				// to a .ofc-trigger button and then closed the menu via
+				// Escape/overlay-click while it was still focused.
+				if (ofc.contains(document.activeElement)) {
+					mobileToggle.focus();
+				}
 				ofc.classList.remove('is-open');
 				ofc.setAttribute('aria-hidden', 'true');
 				overlay && overlay.classList.remove('active');
