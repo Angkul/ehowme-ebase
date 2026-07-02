@@ -100,6 +100,7 @@ class HEC_Theme_Options {
 			'hec_header_nav_hover_color'       => [ 'section' => 'colors', 'label' => __( 'Nav Text Hover Color', 'ehowme-ebase' ), 'type' => 'color', 'default' => '#e67e22' ],
 			'hec_header_active_color'          => [ 'section' => 'colors', 'label' => __( 'Nav Active / Accent Color', 'ehowme-ebase' ), 'type' => 'color', 'default' => '#e67e22' ],
 			'hec_header_transparent_nav_color' => [ 'section' => 'colors', 'label' => __( 'Nav/Logo Text Color (Transparent State)', 'ehowme-ebase' ), 'type' => 'color', 'default' => '#ffffff' ],
+			'hec_header_transparent_nav_hover_color' => [ 'section' => 'colors', 'label' => __( 'Nav Text Hover Color (Transparent State)', 'ehowme-ebase' ), 'type' => 'color', 'default' => '#ffffff' ],
 
 			// ── ปุ่มภาษา ──
 			'hec_show_lang_switcher'          => [ 'section' => 'langbtn', 'label' => __( 'Show Language Switcher', 'ehowme-ebase' ), 'type' => 'checkbox', 'default' => '1' ],
@@ -467,6 +468,7 @@ function hec_output_header_css_vars() {
 	$lang_btn_radius         = hec_css_length( get_option( 'hec_lang_btn_radius', '100px' ), '100px' );
 	$cta_btn_radius          = hec_css_length( get_option( 'hec_cta_btn_radius', '30px' ), '30px' );
 	$transparent_nav_color   = get_option( 'hec_header_transparent_nav_color', '#ffffff' );
+	$transparent_nav_hover_color = get_option( 'hec_header_transparent_nav_hover_color', '#ffffff' );
 
 	echo '<style id="hec-header-css-vars">
 	:root {
@@ -478,6 +480,7 @@ function hec_output_header_css_vars() {
 		--header-nav-hover-color: ' . esc_attr( $nav_hover_color ) . ';
 		--header-nav-active-color: ' . esc_attr( $active_color ) . ';
 		--header-transparent-nav-color: ' . esc_attr( $transparent_nav_color ) . ';
+		--header-transparent-nav-hover-color: ' . esc_attr( $transparent_nav_hover_color ) . ';
 		--header-logo-height: ' . esc_attr( $logo_height ) . 'px;
 		--header-cta-bg: ' . esc_attr( $cta_bg ) . ';
 		--header-cta-hover-bg: ' . esc_attr( $cta_hover_bg ) . ';

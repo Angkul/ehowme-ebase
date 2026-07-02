@@ -5,7 +5,7 @@
  Author:       eHowMe
  Author URI:   https://www.ehowme.com/
  Template:     hello-elementor
- Version:      1.0.7
+ Version:      1.0.8
  License:      GNU General Public License v3 or later
  License URI:  http://www.gnu.org/licenses/gpl-3.0.html
  Text Domain:  ehowme-ebase
@@ -224,6 +224,18 @@ body.hec-transparent-header .site-header-custom + #hec-drawer-overlay + #hec-off
 	color: var(--header-nav-hover-color, #e67e22);
 }
 
+/* Separate hover color while the header is actually floating
+   transparent over the hero (not yet scrolled). Specificity (0,4,0)
+   beats the general hover rule above (0,3,0) so it wins while
+   .is-transparent is present, but loses to the .scrolled-specific
+   rule above (0,5,0) once .scrolled is added — same "more specific
+   override restores the normal look" pattern already used for the
+   base text color a few rules up (.is-transparent vs
+   .is-transparent.scrolled), so no :not(.scrolled) needed. */
+.site-header-custom.is-transparent .nav-link:hover {
+	color: var(--header-transparent-nav-hover-color, #ffffff);
+}
+
 /* Nav chevron */
 .nav-chevron {
 	margin-left: 3px;
@@ -288,7 +300,15 @@ body.hec-transparent-header .site-header-custom + #hec-drawer-overlay + #hec-off
 
 .mega-panel {
 	position: absolute;
-	top: calc(100% + 1px);
+	/* Was "calc(100% + 1px)" — that 1px gap between the trigger <li>
+	   and the panel was enough for the cursor to land in a dead zone
+	   while moving from the link down into the panel, dropping the
+	   :hover state and slamming the panel shut (pointer-events:none
+	   kicks in the instant :hover stops matching, so it also became
+	   unclickable mid-transition). Flush top:100% removes the gap;
+	   the .mega-open JS hover-intent below (see assets/js/header.js)
+	   is the real fix for fast/diagonal mouse movement. */
+	top: 100%;
 	left: 50%;
 	width: 760px;
 	max-width: 96vw;
@@ -305,7 +325,8 @@ body.hec-transparent-header .site-header-custom + #hec-drawer-overlay + #hec-off
 }
 
 .nav-item--mega:hover > .mega-panel,
-.nav-item--mega:focus-within > .mega-panel {
+.nav-item--mega:focus-within > .mega-panel,
+.nav-item--mega.mega-open > .mega-panel {
 	opacity: 1;
 	visibility: visible;
 	transform: translateX(-50%) translateY(0);

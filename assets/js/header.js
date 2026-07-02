@@ -210,6 +210,49 @@
 		}
 
 		/* ================================================
+		   Mega Menu — hover intent
+
+		   .mega-panel is position:absolute with pointer-events:none
+		   by default (see style.css), only becoming interactive
+		   while .nav-item--mega:hover/:focus-within matches. Pure
+		   CSS :hover requires the cursor to stay continuously over
+		   the trigger <li> (or the panel itself, since it's a
+		   descendant) — any brief dead zone the cursor crosses while
+		   moving from the link down into the panel drops :hover
+		   instantly, which also strips pointer-events immediately
+		   (not animated), so the panel can visually still be fading
+		   out yet already be unclickable. A short close delay that's
+		   cancelled by re-entering either the trigger or the panel
+		   absorbs normal mouse movement without needing to track
+		   cursor geometry. .mega-open is an additional trigger
+		   alongside the existing :hover/:focus-within in style.css,
+		   not a replacement — keyboard/focus behavior is untouched.
+		   ================================================ */
+		var megaCloseTimers = new WeakMap();
+
+		document.querySelectorAll('.nav-item--mega').forEach(function (item) {
+			function openMega() {
+				var timer = megaCloseTimers.get(item);
+				if (timer) {
+					clearTimeout(timer);
+					megaCloseTimers.delete(item);
+				}
+				item.classList.add('mega-open');
+			}
+
+			function scheduleCloseMega() {
+				var timer = setTimeout(function () {
+					item.classList.remove('mega-open');
+					megaCloseTimers.delete(item);
+				}, 250);
+				megaCloseTimers.set(item, timer);
+			}
+
+			item.addEventListener('mouseenter', openMega);
+			item.addEventListener('mouseleave', scheduleCloseMega);
+		});
+
+		/* ================================================
 		   Nav Dropdown — keyboard accessibility
 		   ================================================ */
 		var navItems = document.querySelectorAll('.header-nav li');

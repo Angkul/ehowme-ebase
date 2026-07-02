@@ -65,6 +65,7 @@ jQuery(function ($) {
 			'--header-nav-hover-color': hecVal('hec_header_nav_hover_color', { fallback: '#e67e22' }),
 			'--header-nav-active-color': hecVal('hec_header_active_color', { fallback: '#e67e22' }),
 			'--header-transparent-nav-color': hecVal('hec_header_transparent_nav_color', { fallback: '#ffffff' }),
+			'--header-transparent-nav-hover-color': hecVal('hec_header_transparent_nav_hover_color', { fallback: '#ffffff' }),
 			'--header-logo-height': hecVal('hec_header_logo_height', { px: true, fallback: '50px' }),
 			'--header-cta-bg': hecVal('hec_cta_bg_color', { fallback: '#222222' }),
 			'--header-cta-hover-bg': hecVal('hec_cta_hover_bg_color', { fallback: '#e67e22' }),
@@ -150,7 +151,7 @@ jQuery(function ($) {
 	var hecWatchedFields = [
 		'#hec_header_height', '#hec_header_max_width', '#hec_header_transparent',
 		'#hec_header_bg_color', '#hec_header_border_color', '#hec_header_nav_color',
-		'#hec_header_nav_hover_color', '#hec_header_active_color', '#hec_header_transparent_nav_color',
+		'#hec_header_nav_hover_color', '#hec_header_active_color', '#hec_header_transparent_nav_color', '#hec_header_transparent_nav_hover_color',
 		'#hec_header_logo_height', '#hec_show_lang_switcher', '#hec_lang_btn_bg_color',
 		'#hec_lang_btn_border_color', '#hec_lang_btn_hover_bg_color', '#hec_lang_btn_hover_border_color',
 		'#hec_lang_btn_hover_color', '#hec_lang_btn_radius', '#hec_show_cta_button',

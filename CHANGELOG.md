@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.0.8] - 2026-07-02
+
+### Added
+- **Nav Text Hover Color (Transparent State)** theme option — a dedicated hover color for nav links while the header is actively floating transparent over the hero (unscrolled), separate from the existing solid-state hover color. Follows the same "more specific .scrolled rule restores the normal look" pattern already used for the base transparent text color, so it automatically steps aside once the header goes solid on scroll.
+
+### Fixed
+- Mega menu closing before the user could move the mouse into it and click anything. `.mega-panel` is `position: absolute` with `pointer-events: none` by default, only becoming interactive while the trigger `<li>` matches `:hover`/`:focus-within` in CSS — a 1px gap between the trigger and the panel (plus normal mouse movement not being perfectly vertical) was enough to drop the `:hover` state for an instant while moving toward the panel, which also strips `pointer-events` immediately (it isn't part of the animated transition), so the panel could still be visible mid-fade yet already unclickable. Removed the gap and added a JS hover-intent delay (`assets/js/header.js`) that keeps the panel open for 250ms after the mouse leaves the trigger, cancelled if the cursor re-enters the trigger or the panel, as an additional trigger alongside the existing CSS `:hover`/`:focus-within` — keyboard/focus behavior is untouched.
+
 ## [1.0.7] - 2026-07-02
 
 ### Fixed
