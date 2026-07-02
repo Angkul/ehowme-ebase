@@ -5,7 +5,7 @@
  Author:       eHowMe
  Author URI:   https://www.ehowme.com/
  Template:     hello-elementor
- Version:      1.0.4
+ Version:      1.0.5
  License:      GNU General Public License v3 or later
  License URI:  http://www.gnu.org/licenses/gpl-3.0.html
  Text Domain:  ehowme-ebase
@@ -56,9 +56,13 @@ body.admin-bar .site-header-custom {
 	top: var(--wp-admin--admin-bar--height, 32px);
 }
 
+/* On mobile, WP core switches #wpadminbar to `position: absolute`
+   (it scrolls away with the page instead of staying fixed), so the
+   header doesn't need to reserve space for it — undo the desktop
+   offset above and stick back to top:0. */
 @media screen and (max-width: 782px) {
 	body.admin-bar .site-header-custom {
-		top: var(--wp-admin--admin-bar--height, 46px);
+		top: 0;
 	}
 }
 
@@ -390,7 +394,7 @@ body.hec-transparent-header #content {
 	height: 36px;
 	padding: 0 14px;
 	border: 1px solid var(--lang-btn-border-color, #E8E8E6);
-	border-radius: 100px;
+	border-radius: var(--lang-btn-radius, 100px);
 	background: var(--lang-btn-bg-color, #ffffff);
 	cursor: pointer;
 	font-size: 13px;
@@ -458,7 +462,7 @@ body.hec-transparent-header #content {
 }
 
 @media (max-width: 1024px) {
-	.lang-btn { height: 42px; border-radius: 9px; }
+	.lang-btn { height: 42px; border-radius: var(--lang-btn-radius, 9px); }
 }
 
 /* CTA Button — ความสูงเท่า lang-btn (36px desktop) */
@@ -470,7 +474,7 @@ body.hec-transparent-header #content {
 	padding: 0 20px;
 	background: var(--header-cta-bg, #222222);
 	color: var(--header-cta-color, #ffffff) !important;
-	border-radius: 30px;
+	border-radius: var(--header-cta-radius, 30px);
 	text-decoration: none !important;
 	font-size: 0.9rem;
 	font-weight: 500;
@@ -479,11 +483,11 @@ body.hec-transparent-header #content {
 }
 
 @media (max-width: 1024px) {
-	.header-cta-btn { height: 42px; border-radius: 9px; }
+	.header-cta-btn { height: 42px; border-radius: var(--header-cta-radius, 9px); }
 }
 
 .header-cta-btn:hover {
-	background: var(--header-nav-active-color, #2254c5);
+	background: var(--header-cta-hover-bg, #e67e22);
 	transform: translateX(2px);
 }
 
@@ -526,7 +530,13 @@ body.hec-transparent-header #content {
 	.header-nav { display: none !important; }
 	.header-actions { display: flex; gap: 8px; align-items: center; }
 	.mobile-menu-toggle { display: flex; }
-	.site-header-custom { position: relative; }
+	/* Was `position: relative` — that overrode the base sticky header
+	   on every mobile screen, so the header scrolled away with the page
+	   instead of sticking, and never showed the transparent→solid
+	   transition (see the .is-transparent comment above). Sticky still
+	   works fine as a positioning context for the dropdown/off-canvas
+	   menus below, so keep it consistent with desktop. */
+	.site-header-custom { position: sticky; }
 	.header-cta-btn { padding: 8px 14px; font-size: 0.82rem; }
 	/* Mega panel ปิดทั้งหมดบน mobile */
 	.mega-panel { display: none !important; }
@@ -610,10 +620,12 @@ body.hec-transparent-header #content {
 	transform: translateX(0);
 }
 
-/* Admin bar offset */
+/* Admin bar offset — desktop only. On mobile WP core switches
+   #wpadminbar to `position: absolute` (scrolls away with the page),
+   so the off-canvas menu doesn't need to reserve space for it. */
 .admin-bar .hec-offcanvas { top: 32px; }
 @media screen and (max-width: 782px) {
-	.admin-bar .hec-offcanvas { top: 46px; }
+	.admin-bar .hec-offcanvas { top: 0; }
 }
 
 /* Mobile sidebar: ซ่อน CTA, lang ยังแสดงชิด hamburger */
@@ -661,7 +673,7 @@ body.hec-transparent-header #content {
 .ofc-footer .header-cta-btn {
 	display: flex;
 	justify-content: center;
-	border-radius: 12px;
+	border-radius: var(--header-cta-radius, 12px);
 	padding: 14px 20px;
 	font-size: 0.95rem;
 	width: 100%;
@@ -672,7 +684,7 @@ body.hec-transparent-header #content {
 }
 .ofc-footer .lang-btn {
 	width: 100%;
-	border-radius: 10px;
+	border-radius: var(--lang-btn-radius, 10px);
 	justify-content: center;
 	height: 44px;
 }

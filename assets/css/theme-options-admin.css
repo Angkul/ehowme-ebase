@@ -1,0 +1,226 @@
+/**
+ * Admin UI for the "Theme Options" page — modern tabbed layout + live
+ * header preview. Loaded only on Appearance → Theme Options (see
+ * HEC_Theme_Options::enqueue_admin_assets()).
+ */
+
+.hec-options-page {
+	max-width: 1040px;
+}
+
+.hec-options-page .hec-page-head {
+	margin: 20px 0 24px;
+}
+
+.hec-options-page .hec-page-head h1 {
+	margin-bottom: 4px;
+}
+
+.hec-options-page .hec-page-sub {
+	color: #646970;
+	font-size: 14px;
+	margin: 0;
+}
+
+/* ── Live preview card ─────────────────────────────────────────── */
+
+.hec-live-preview-card {
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+	margin-bottom: 24px;
+	overflow: hidden;
+}
+
+.hec-live-preview-toolbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 8px;
+	padding: 12px 18px;
+	border-bottom: 1px solid #f0f0f1;
+	background: #fafafa;
+}
+
+.hec-live-preview-toolbar strong {
+	font-size: 14px;
+}
+
+.hec-live-preview-hint {
+	color: #8c8f94;
+	font-size: 12px;
+}
+
+.hec-live-preview {
+	position: relative;
+	max-height: 260px;
+	overflow-y: auto;
+	background: #f0f0f1;
+}
+
+/* Reset a few things the real theme assumes exist on the front-end
+   (a full <body>, a nav menu with real links, etc.) so the mock header
+   doesn't look broken inside wp-admin. */
+.hec-live-preview .site-header-custom {
+	width: 100%;
+}
+
+.hec-live-preview .header-nav ul {
+	flex-wrap: wrap;
+}
+
+.hec-live-preview .mobile-menu-toggle {
+	cursor: default;
+}
+
+.hec-live-preview a,
+.hec-live-preview button.lang-btn,
+.hec-live-preview .header-cta-btn {
+	cursor: default;
+}
+
+.hec-mock-body {
+	min-height: 640px;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	padding-top: 48px;
+	color: #8c8f94;
+	font-size: 13px;
+	background: linear-gradient(135deg, #d9e2f5 0%, #eef1f9 45%, #f7f3ee 100%);
+}
+
+/* Transparent-header state: pull the mock body up underneath the
+   header, exactly like `body.hec-transparent-header #content` does
+   on the real front-end (see style.css). */
+#hec-live-preview.is-transparent .hec-mock-body {
+	margin-top: calc(-1 * var(--header-height, 70px));
+	padding-top: calc(48px + var(--header-height, 70px));
+}
+
+/* ── Tabs ───────────────────────────────────────────────────────── */
+
+.hec-tabs-form {
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+	overflow: hidden;
+}
+
+.hec-tab-nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2px;
+	padding: 8px 8px 0;
+	background: #fafafa;
+	border-bottom: 1px solid #dcdcde;
+}
+
+.hec-tab-btn {
+	appearance: none;
+	border: 1px solid transparent;
+	border-bottom: none;
+	background: transparent;
+	padding: 10px 16px;
+	font-size: 13px;
+	font-weight: 500;
+	color: #50575e;
+	cursor: pointer;
+	border-radius: 6px 6px 0 0;
+}
+
+.hec-tab-btn:hover {
+	background: #f0f0f1;
+	color: #1d2327;
+}
+
+.hec-tab-btn.is-active {
+	background: #fff;
+	color: #2271b1;
+	border-color: #dcdcde;
+	position: relative;
+	top: 1px;
+}
+
+.hec-tab-panel {
+	display: none;
+	padding: 8px 24px 24px;
+}
+
+.hec-tab-panel.is-active {
+	display: block;
+}
+
+.hec-tab-panel .form-table {
+	margin-top: 8px;
+}
+
+.hec-tab-panel .form-table th {
+	width: 260px;
+	padding-left: 0;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.hec-tab-panel .form-table td {
+	padding-left: 0;
+}
+
+.hec-tab-panel .form-table tr {
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.hec-tab-panel .form-table tr:last-child {
+	border-bottom: none;
+}
+
+.hec-save-bar {
+	padding: 16px 24px;
+	background: #fafafa;
+	border-top: 1px solid #dcdcde;
+}
+
+.hec-save-bar .button {
+	margin: 0;
+}
+
+/* ── Misc field styling ─────────────────────────────────────────── */
+
+.hec-options-page .hec-color-hex {
+	margin-left: 8px;
+	font-size: 12px;
+	color: #666;
+}
+
+.hec-options-page input.regular-text,
+.hec-options-page select {
+	max-width: 360px;
+}
+
+.hec-upload-btn {
+	margin-right: 6px !important;
+}
+
+.hec-preview-box {
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	padding: 16px 24px;
+	margin-top: 24px;
+}
+
+.hec-preview-box h2 {
+	margin-top: 0;
+}
+
+.hec-preview-box pre {
+	background: #1e1e1e;
+	color: #9cdcfe;
+	padding: 16px;
+	border-radius: 4px;
+	overflow-x: auto;
+	font-size: 13px;
+}
