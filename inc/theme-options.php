@@ -110,6 +110,7 @@ class HEC_Theme_Options {
 			'hec_lang_btn_hover_border_color' => [ 'section' => 'langbtn', 'label' => __( 'Lang Button Hover Border Color', 'ehowme-ebase' ), 'type' => 'color', 'default' => '#E8E8E6' ],
 			'hec_lang_btn_hover_color'        => [ 'section' => 'langbtn', 'label' => __( 'Lang Button Hover Text Color', 'ehowme-ebase' ), 'type' => 'color', 'default' => '#0F0F0F' ],
 			'hec_lang_btn_radius'             => [ 'section' => 'langbtn', 'label' => __( 'Lang Button Border Radius (e.g. 100px or 50%)', 'ehowme-ebase' ), 'default' => '100px' ],
+			'hec_lang_menu_radius'            => [ 'section' => 'langbtn', 'label' => __( 'Lang Menu Border Radius (e.g. 12px)', 'ehowme-ebase' ), 'default' => '12px' ],
 
 			// ── ปุ่ม CTA ──
 			'hec_show_cta_button' => [ 'section' => 'cta', 'label' => __( 'Show CTA Button', 'ehowme-ebase' ), 'type' => 'checkbox', 'default' => '1' ],
@@ -511,6 +512,7 @@ function hec_output_header_css_vars() {
 	$lang_btn_hover_border   = get_option( 'hec_lang_btn_hover_border_color', '#E8E8E6' );
 	$lang_btn_hover_color    = get_option( 'hec_lang_btn_hover_color', '#0F0F0F' );
 	$lang_btn_radius         = hec_css_length( get_option( 'hec_lang_btn_radius', '100px' ), '100px' );
+	$lang_menu_radius        = hec_css_length( get_option( 'hec_lang_menu_radius', '12px' ), '12px' );
 	$cta_btn_radius          = hec_css_length( get_option( 'hec_cta_btn_radius', '30px' ), '30px' );
 	$transparent_nav_color   = get_option( 'hec_header_transparent_nav_color', '#ffffff' );
 	$transparent_nav_hover_color = get_option( 'hec_header_transparent_nav_hover_color', '#ffffff' );
@@ -541,6 +543,7 @@ function hec_output_header_css_vars() {
 		--lang-btn-hover-border-color: ' . esc_attr( $lang_btn_hover_border ) . ';
 		--lang-btn-hover-color: ' . esc_attr( $lang_btn_hover_color ) . ';
 		--lang-btn-radius: ' . esc_attr( $lang_btn_radius ) . ';
+		--lang-menu-radius: ' . esc_attr( $lang_menu_radius ) . ';
 	}
 	</style>' . "\n";
 }

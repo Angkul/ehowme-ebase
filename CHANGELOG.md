@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.1.4] - 2026-07-03
+
+### Added
+- **Lang Menu Border Radius** theme option (Language Button tab, under "Lang Button Border Radius") — controls the border-radius of the language dropdown panel (`.lang-menu`) and its item links (`.lang-menu a`), wired through the new `--lang-menu-radius` CSS variable. Falls back to the previous hardcoded look (12px / 8px) when left blank.
+
 ## [1.1.3] - 2026-07-03
 
 ### Fixed
