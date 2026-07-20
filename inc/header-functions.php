@@ -84,8 +84,9 @@ function hec_header_language_switcher() {
 
 	$languages = pll_the_languages( [ 'raw' => 1 ] );
 
-	// ไม่แสดงถ้ามีภาษาเดียวหรือน้อยกว่า
-	if ( count( $languages ) <= 1 ) {
+	// pll_the_languages() คืน '' นอก frontend (REST/preview) — กัน
+	// count('') ซึ่ง fatal บน PHP 8 / ไม่แสดงถ้ามีภาษาเดียวหรือน้อยกว่า
+	if ( ! is_array( $languages ) || count( $languages ) <= 1 ) {
 		return;
 	}
 
@@ -127,6 +128,61 @@ function hec_header_language_switcher() {
 }
 
 /**
+ * Icon library ใช้ร่วมกันสำหรับปุ่ม CTA ทั้งสอง — เพิ่ม icon ใหม่ในอนาคต
+ * แค่เติมเข้า array นี้ (slug => [ label, svg ]) ตัวเลือกใน Theme Options
+ * (select field 'icon') จะมีให้เลือกอัตโนมัติ
+ */
+function hec_get_cta_icons() {
+	return [
+		'none' => [
+			'label' => __( 'None', 'ehowme-ebase' ),
+			'svg'   => '',
+		],
+		'arrow-right' => [
+			'label' => __( 'Arrow Right', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M15 16l4 -4" /><path d="M15 8l4 4" /></svg>',
+		],
+		'arrow-up-right' => [
+			'label' => __( 'Arrow Up-Right', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 7l-10 10" /><path d="M8 7l9 0l0 9" /></svg>',
+		],
+		'chevron-right' => [
+			'label' => __( 'Chevron Right', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>',
+		],
+		'external-link' => [
+			'label' => __( 'External Link', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" /><path d="M11 13l9 -9" /><path d="M15 4h5v5" /></svg>',
+		],
+		'phone' => [
+			'label' => __( 'Phone', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2" /></svg>',
+		],
+		'mail' => [
+			'label' => __( 'Mail', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" /><path d="M3 7l9 6l9 -6" /></svg>',
+		],
+		'download' => [
+			'label' => __( 'Download', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>',
+		],
+	];
+}
+
+/**
+ * คืน markup ของ icon (raw SVG, มาจาก array ที่กำหนดไว้ในธีมเท่านั้น
+ * ไม่ใช่ค่าที่ user พิมพ์เอง จึงไม่ต้อง esc) ห่อด้วย span.header-cta-icon
+ * เพื่อคุม vertical-align/size ผ่าน CSS ได้ — คืนค่าว่างถ้าไม่มี/ไม่เจอ icon
+ */
+function hec_get_cta_icon_markup( $icon_slug ) {
+	$icons = hec_get_cta_icons();
+	if ( empty( $icon_slug ) || 'none' === $icon_slug || empty( $icons[ $icon_slug ]['svg'] ) ) {
+		return '';
+	}
+	return '<span class="header-cta-icon">' . $icons[ $icon_slug ]['svg'] . '</span>';
+}
+
+/**
  * Output CTA Button
  */
 function hec_header_cta_button() {
@@ -147,15 +203,47 @@ function hec_header_cta_button() {
 	if ( ! $label && ! $url ) {
 		return;
 	}
+
+	$icon_markup = hec_get_cta_icon_markup( get_option( 'hec_cta_icon', 'arrow-right' ) );
+	$icon_before = 'before' === get_option( 'hec_cta_icon_position', 'after' );
 	?>
 	<a href="<?php echo esc_url( $url ); ?>" class="header-cta-btn">
+		<?php if ( $icon_before ) echo $icon_markup; ?>
 		<?php echo esc_html( $label ); ?>
-		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-narrow-right">
-			<path stroke="none" d="M0 0h24v24H0z" fill="none" />
-			<path d="M5 12l14 0" />
-			<path d="M15 16l4 -4" />
-			<path d="M15 8l4 4" />
-		</svg>
+		<?php if ( ! $icon_before ) echo $icon_markup; ?>
+	</a>
+	<?php
+}
+
+/**
+ * Output CTA Button 2 (secondary — ปิดโดย default, เปิดได้ที่ Theme Options → CTA Button)
+ */
+function hec_header_cta_button_2() {
+	if ( ! get_option( 'hec_show_cta_button_2', '0' ) ) {
+		return;
+	}
+
+	$lang   = function_exists( 'hec_get_current_language' ) ? hec_get_current_language() : '';
+	$suffix = $lang ? '_' . $lang : '';
+
+	$label = get_option( 'hec_cta_label_2' . $suffix, '' );
+	$url   = get_option( 'hec_cta_url_2' . $suffix, '' );
+
+	// Fallback
+	if ( ! $label ) $label = get_option( 'hec_cta_label_2', __( 'Learn More', 'ehowme-ebase' ) );
+	if ( ! $url )   $url   = get_option( 'hec_cta_url_2', home_url( '/' ) );
+
+	if ( ! $label && ! $url ) {
+		return;
+	}
+
+	$icon_markup = hec_get_cta_icon_markup( get_option( 'hec_cta_icon_2', 'none' ) );
+	$icon_before = 'before' === get_option( 'hec_cta_icon_position_2', 'after' );
+	?>
+	<a href="<?php echo esc_url( $url ); ?>" class="header-cta-btn header-cta-btn--secondary">
+		<?php if ( $icon_before ) echo $icon_markup; ?>
+		<?php echo esc_html( $label ); ?>
+		<?php if ( ! $icon_before ) echo $icon_markup; ?>
 	</a>
 	<?php
 }
@@ -508,17 +596,41 @@ function hec_render_offcanvas() {
 	echo '</div>'; // .ofc-wrap
 
 	// ── Footer: CTA only ─────────────────────────────────────
+	// .ofc-footer is flex-direction:column, so DOM order = top-to-bottom
+	// stacking order — Button 2 (secondary) renders first so Button 1
+	// (primary) always ends up last, i.e. at the very bottom of the panel.
 	echo '<div class="ofc-footer">';
 
-	// CTA button
+	// Button 2 (secondary)
+	if ( get_option( 'hec_show_cta_button_2', '0' ) ) {
+		$lang   = function_exists( 'hec_get_current_language' ) ? hec_get_current_language() : '';
+		$suffix = $lang ? '_' . $lang : '';
+		$label  = get_option( 'hec_cta_label_2' . $suffix ) ?: get_option( 'hec_cta_label_2', __( 'Learn More', 'ehowme-ebase' ) );
+		$url    = get_option( 'hec_cta_url_2' . $suffix ) ?: get_option( 'hec_cta_url_2', home_url( '/' ) );
+		if ( $label && $url ) {
+			$icon_markup = hec_get_cta_icon_markup( get_option( 'hec_cta_icon_2', 'none' ) );
+			$icon_before = 'before' === get_option( 'hec_cta_icon_position_2', 'after' );
+			echo '<a href="' . esc_url( $url ) . '" class="header-cta-btn header-cta-btn--secondary">';
+			if ( $icon_before ) echo $icon_markup;
+			echo esc_html( $label );
+			if ( ! $icon_before ) echo $icon_markup;
+			echo '</a>';
+		}
+	}
+
+	// CTA button (primary) — always last, i.e. bottom-most
 	if ( get_option( 'hec_show_cta_button', '1' ) ) {
 		$lang   = function_exists( 'hec_get_current_language' ) ? hec_get_current_language() : '';
 		$suffix = $lang ? '_' . $lang : '';
 		$label  = get_option( 'hec_cta_label' . $suffix ) ?: get_option( 'hec_cta_label', __( 'Contact Us', 'ehowme-ebase' ) );
 		$url    = get_option( 'hec_cta_url' . $suffix ) ?: get_option( 'hec_cta_url', home_url( '/contact' ) );
 		if ( $label && $url ) {
-			echo '<a href="' . esc_url( $url ) . '" class="header-cta-btn">' . esc_html( $label );
-			echo '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0"/><path d="M15 16l4 -4"/><path d="M15 8l4 4"/></svg>';
+			$icon_markup = hec_get_cta_icon_markup( get_option( 'hec_cta_icon', 'arrow-right' ) );
+			$icon_before = 'before' === get_option( 'hec_cta_icon_position', 'after' );
+			echo '<a href="' . esc_url( $url ) . '" class="header-cta-btn">';
+			if ( $icon_before ) echo $icon_markup;
+			echo esc_html( $label );
+			if ( ! $icon_before ) echo $icon_markup;
 			echo '</a>';
 		}
 	}

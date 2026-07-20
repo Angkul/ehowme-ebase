@@ -85,14 +85,14 @@ function hec_get_languages() {
 			}
 		}
 	} elseif ( 'polylang' === $plugin ) {
-		$pll_languages = pll_the_languages( [
+		$pll_languages = function_exists( 'pll_the_languages' ) ? pll_the_languages( [
 			'raw'            => 1,
 			'show_names'     => 1,
 			'display_names_as' => 'name',
 			'hide_if_empty'  => 0,
-		] );
+		] ) : '';
 
-		if ( is_array( $pll_languages ) ) {
+		if ( is_array( $pll_languages ) && ! empty( $pll_languages ) ) {
 			foreach ( $pll_languages as $lang ) {
 				$languages[] = [
 					'code'   => $lang['slug'],
@@ -101,6 +101,28 @@ function hec_get_languages() {
 					'flag'   => isset( $lang['flag'] ) ? $lang['flag'] : '',
 					'active' => (bool) $lang['current_lang'],
 				];
+			}
+		} elseif ( function_exists( 'pll_languages_list' ) ) {
+			// pll_the_languages() ทำงานเฉพาะ frontend (PLL_Frontend) — ใน
+			// wp-admin จะคืน '' เสมอ ทำให้ field ต่อภาษาในหน้า Theme Options
+			// (hec_header_menu_{lang}, hec_cta_label_{lang}, ...) ไม่ถูก
+			// register/แสดงเลย ใช้ pll_languages_list() ซึ่งทำงานทุก context
+			// เป็น fallback (url ใช้ home url ของภาษา — พอสำหรับ admin,
+			// ส่วน frontend switcher ยังได้ per-page url จาก branch บน)
+			$slugs   = pll_languages_list( [ 'fields' => 'slug' ] );
+			$names   = pll_languages_list( [ 'fields' => 'name' ] );
+			$current = function_exists( 'pll_current_language' ) ? pll_current_language( 'slug' ) : '';
+
+			if ( is_array( $slugs ) ) {
+				foreach ( $slugs as $i => $slug ) {
+					$languages[] = [
+						'code'   => $slug,
+						'name'   => isset( $names[ $i ] ) ? $names[ $i ] : strtoupper( $slug ),
+						'url'    => function_exists( 'pll_home_url' ) ? pll_home_url( $slug ) : home_url( '/' ),
+						'flag'   => '',
+						'active' => ( $slug === $current ),
+					];
+				}
 			}
 		}
 	} else {

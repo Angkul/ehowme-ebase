@@ -55,6 +55,7 @@ class HEC_Theme_Options {
 	 */
 	private function get_tabs() {
 		return [
+			'header_layout' => __( 'Header Layout', 'ehowme-ebase' ),
 			'layout'    => __( 'General', 'ehowme-ebase' ),
 			'logo'      => __( 'Logo', 'ehowme-ebase' ),
 			'colors'    => __( 'Colors', 'ehowme-ebase' ),
@@ -78,6 +79,22 @@ class HEC_Theme_Options {
 
 	/** Register all settings */
 	public function register_settings() {
+
+		// ---- Header Layout (slot-based builder — เก็บเป็น JSON เดียว) ----
+		register_setting( self::OPTION_GROUP, 'hec_header_layout', [ 'sanitize_callback' => 'hec_sanitize_header_layout' ] );
+
+		// ---- Icon dropdown options สำหรับปุ่ม CTA (ใช้ registry เดียวกับ
+		// ตัว render จริงใน inc/header-functions.php ไม่ต้อง sync มือ) ----
+		$cta_icon_options = [];
+		if ( function_exists( 'hec_get_cta_icons' ) ) {
+			foreach ( hec_get_cta_icons() as $icon_slug => $icon_data ) {
+				$cta_icon_options[ $icon_slug ] = $icon_data['label'];
+			}
+		}
+		$cta_icon_position_options = [
+			'after'  => __( 'After Text', 'ehowme-ebase' ),
+			'before' => __( 'Before Text', 'ehowme-ebase' ),
+		];
 
 		// ---- General Header Options (ไม่แยกภาษา) ----
 		// 'section' คือ tab ที่ field นี้จะไปอยู่ (ดู get_tabs())
@@ -112,11 +129,26 @@ class HEC_Theme_Options {
 			'hec_lang_btn_radius'             => [ 'section' => 'langbtn', 'label' => __( 'Lang Button Border Radius (e.g. 100px or 50%)', 'ehowme-ebase' ), 'default' => '100px' ],
 			'hec_lang_menu_radius'            => [ 'section' => 'langbtn', 'label' => __( 'Lang Menu Border Radius (e.g. 12px)', 'ehowme-ebase' ), 'default' => '12px' ],
 
-			// ── ปุ่ม CTA ──
+			// ── ปุ่ม CTA (Button 1 — primary) ──
+			'hec_cta_heading_1' => [ 'section' => 'cta', 'label' => '— ' . __( 'Button 1 (Primary)', 'ehowme-ebase' ) . ' —', 'type' => 'heading', 'class' => 'hec-menu-lang-heading-row' ],
 			'hec_show_cta_button' => [ 'section' => 'cta', 'label' => __( 'Show CTA Button', 'ehowme-ebase' ), 'type' => 'checkbox', 'default' => '1' ],
 			'hec_cta_bg_color'       => [ 'section' => 'cta', 'label' => __( 'CTA Button BG Color', 'ehowme-ebase' ), 'type' => 'color', 'default' => '#222222' ],
 			'hec_cta_hover_bg_color' => [ 'section' => 'cta', 'label' => __( 'CTA Button Hover BG Color', 'ehowme-ebase' ), 'type' => 'color', 'default' => '#e67e22' ],
+			'hec_cta_text_color'     => [ 'section' => 'cta', 'label' => __( 'CTA Button Text Color', 'ehowme-ebase' ), 'type' => 'color', 'default' => '#ffffff' ],
 			'hec_cta_btn_radius'     => [ 'section' => 'cta', 'label' => __( 'CTA Button Border Radius (e.g. 30px or 50%)', 'ehowme-ebase' ), 'default' => '30px' ],
+			'hec_cta_icon'           => [ 'section' => 'cta', 'label' => __( 'Icon', 'ehowme-ebase' ), 'type' => 'select', 'default' => 'arrow-right', 'options' => $cta_icon_options ],
+			'hec_cta_icon_position'  => [ 'section' => 'cta', 'label' => __( 'Icon Position', 'ehowme-ebase' ), 'type' => 'select', 'default' => 'after', 'options' => $cta_icon_position_options ],
+
+			// ── ปุ่ม CTA (Button 2 — secondary, ปิดโดย default) ──
+			'hec_cta_heading_2' => [ 'section' => 'cta', 'label' => '— ' . __( 'Button 2 (Secondary)', 'ehowme-ebase' ) . ' —', 'type' => 'heading', 'class' => 'hec-menu-lang-heading-row' ],
+			'hec_show_cta_button_2'     => [ 'section' => 'cta', 'label' => __( 'Show Button 2', 'ehowme-ebase' ), 'type' => 'checkbox', 'default' => '0' ],
+			'hec_cta_bg_color_2'        => [ 'section' => 'cta', 'label' => __( 'Button 2 BG Color', 'ehowme-ebase' ), 'type' => 'color', 'default' => '#ffffff' ],
+			'hec_cta_hover_bg_color_2'  => [ 'section' => 'cta', 'label' => __( 'Button 2 Hover BG Color', 'ehowme-ebase' ), 'type' => 'color', 'default' => '#f5f5f5' ],
+			'hec_cta_text_color_2'      => [ 'section' => 'cta', 'label' => __( 'Button 2 Text Color', 'ehowme-ebase' ), 'type' => 'color', 'default' => '#222222' ],
+			'hec_cta_border_color_2'    => [ 'section' => 'cta', 'label' => __( 'Button 2 Border Color', 'ehowme-ebase' ), 'type' => 'color', 'default' => '#222222' ],
+			'hec_cta_btn_radius_2'      => [ 'section' => 'cta', 'label' => __( 'Button 2 Border Radius (e.g. 30px or 50%)', 'ehowme-ebase' ), 'default' => '30px' ],
+			'hec_cta_icon_2'            => [ 'section' => 'cta', 'label' => __( 'Icon', 'ehowme-ebase' ), 'type' => 'select', 'default' => 'none', 'options' => $cta_icon_options ],
+			'hec_cta_icon_position_2'   => [ 'section' => 'cta', 'label' => __( 'Icon Position', 'ehowme-ebase' ), 'type' => 'select', 'default' => 'after', 'options' => $cta_icon_position_options ],
 
 			// ── เมนู ──
 			'hec_header_menu'       => [ 'section' => 'menu', 'label' => __( 'Header Menu (Default)', 'ehowme-ebase' ), 'type' => 'menu_select', 'default' => '' ],
@@ -201,6 +233,8 @@ class HEC_Theme_Options {
 			$ml_fields = [
 				"hec_cta_label{$suffix}" => [ 'label' => sprintf( __( 'CTA Button Label [%s]', 'ehowme-ebase' ), $lang_label ), 'default' => __( 'Contact Us', 'ehowme-ebase' ) ],
 				"hec_cta_url{$suffix}"   => [ 'label' => sprintf( __( 'CTA Button URL [%s]', 'ehowme-ebase' ), $lang_label ), 'type' => 'url', 'default' => home_url( '/contact' ) ],
+				"hec_cta_label_2{$suffix}" => [ 'label' => sprintf( __( 'Button 2 Label [%s]', 'ehowme-ebase' ), $lang_label ), 'default' => __( 'Learn More', 'ehowme-ebase' ) ],
+				"hec_cta_url_2{$suffix}"   => [ 'label' => sprintf( __( 'Button 2 URL [%s]', 'ehowme-ebase' ), $lang_label ), 'type' => 'url', 'default' => home_url( '/' ) ],
 			];
 			// หมายเหตุ: Header Menu / Mobile Menu ต่อภาษา ย้ายไปอยู่ที่ tab "Menus" แล้ว (รวมกับ Default)
 
@@ -336,7 +370,6 @@ class HEC_Theme_Options {
 
 		$tabs     = $this->get_tabs();
 		$first_id = array_key_first( $tabs );
-		$logo_url = get_option( 'hec_logo_url', '' );
 		?>
 		<div class="wrap hec-options-page hec-modern">
 
@@ -350,40 +383,21 @@ class HEC_Theme_Options {
 			<div class="hec-live-preview-card">
 				<div class="hec-live-preview-toolbar">
 					<strong><?php esc_html_e( 'Header Live Preview', 'ehowme-ebase' ); ?></strong>
-					<span class="hec-live-preview-hint"><?php esc_html_e( 'Scroll inside the box below to preview the scrolled state.', 'ehowme-ebase' ); ?></span>
+					<div class="hec-device-switch" role="group" aria-label="<?php esc_attr_e( 'Preview device', 'ehowme-ebase' ); ?>">
+						<button type="button" class="hec-device-btn is-active" data-device="desktop"><?php esc_html_e( 'Desktop', 'ehowme-ebase' ); ?></button>
+						<button type="button" class="hec-device-btn" data-device="tablet"><?php esc_html_e( 'Tablet', 'ehowme-ebase' ); ?></button>
+						<button type="button" class="hec-device-btn" data-device="mobile"><?php esc_html_e( 'Mobile', 'ehowme-ebase' ); ?></button>
+					</div>
+					<span class="hec-live-preview-hint"><?php esc_html_e( 'This is your real homepage. Colors/toggles update instantly; menu, icon, and layout changes need Save to appear here.', 'ehowme-ebase' ); ?></span>
 				</div>
-				<div class="hec-live-preview" id="hec-live-preview" data-site-name="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>">
-					<header class="site-header-custom is-sticky" id="hec-mock-header">
-						<div class="header-inner">
-							<div class="header-logo" id="hec-mock-logo-wrap">
-								<?php if ( $logo_url ) : ?>
-									<a href="#" tabindex="-1"><img src="<?php echo esc_url( $logo_url ); ?>" id="hec-mock-logo-img" style="max-height:var(--header-logo-height,50px);width:auto;" alt=""></a>
-								<?php else : ?>
-									<a href="#" tabindex="-1"><span class="site-title-text" id="hec-mock-sitename"><?php bloginfo( 'name' ); ?></span></a>
-								<?php endif; ?>
-							</div>
-							<nav class="header-nav">
-								<ul>
-									<li class="nav-item current-menu-item"><a href="#" class="nav-link" tabindex="-1"><?php esc_html_e( 'Home', 'ehowme-ebase' ); ?></a></li>
-									<li class="nav-item"><a href="#" class="nav-link" tabindex="-1"><?php esc_html_e( 'Products', 'ehowme-ebase' ); ?></a></li>
-									<li class="nav-item"><a href="#" class="nav-link" tabindex="-1"><?php esc_html_e( 'Services', 'ehowme-ebase' ); ?></a></li>
-									<li class="nav-item"><a href="#" class="nav-link" tabindex="-1"><?php esc_html_e( 'Contact', 'ehowme-ebase' ); ?></a></li>
-								</ul>
-							</nav>
-							<div class="header-actions">
-								<div class="lang-switch" id="hec-mock-lang-switch">
-									<button type="button" class="lang-btn" tabindex="-1">TH <span class="caret">▾</span></button>
-								</div>
-								<a href="#" class="header-cta-btn" id="hec-mock-cta" tabindex="-1"><?php esc_html_e( 'Contact Us', 'ehowme-ebase' ); ?></a>
-							</div>
-							<button type="button" class="mobile-menu-toggle" id="hec-mock-toggle" tabindex="-1" aria-hidden="true"><span></span><span></span><span></span></button>
-						</div>
-					</header>
-					<div class="hec-mock-body" id="hec-mock-body">
-						<span><?php esc_html_e( 'Page content area (simulated)', 'ehowme-ebase' ); ?></span>
+				<div class="hec-live-preview-viewport">
+					<div class="hec-live-preview-frame-wrap" id="hec-live-preview-frame-wrap" data-device="desktop">
+						<iframe id="hec-live-preview-frame" src="<?php echo esc_url( home_url( '/' ) ); ?>" title="<?php esc_attr_e( 'Header live preview', 'ehowme-ebase' ); ?>"></iframe>
 					</div>
 				</div>
 			</div>
+
+			<div class="hec-options-inner">
 
 			<form method="post" action="options.php" class="hec-tabs-form">
 				<?php settings_fields( self::OPTION_GROUP ); ?>
@@ -398,12 +412,16 @@ class HEC_Theme_Options {
 					<div class="hec-tab-panels">
 						<?php foreach ( $tabs as $tab_id => $tab_label ) : ?>
 							<div class="hec-tab-panel<?php echo ( $tab_id === $first_id ) ? ' is-active' : ''; ?>" data-tab="<?php echo esc_attr( $tab_id ); ?>">
-								<?php if ( 'multilang' === $tab_id ) : ?>
-									<?php $this->render_multilang_section_desc(); ?>
+								<?php if ( 'header_layout' === $tab_id ) : ?>
+									<?php $this->render_header_layout_builder(); ?>
+								<?php else : ?>
+									<?php if ( 'multilang' === $tab_id ) : ?>
+										<?php $this->render_multilang_section_desc(); ?>
+									<?php endif; ?>
+									<table class="form-table" role="presentation">
+										<?php do_settings_fields( self::PAGE_SLUG, 'hec_section_' . $tab_id ); ?>
+									</table>
 								<?php endif; ?>
-								<table class="form-table" role="presentation">
-									<?php do_settings_fields( self::PAGE_SLUG, 'hec_section_' . $tab_id ); ?>
-								</table>
 							</div>
 						<?php endforeach; ?>
 					</div>
@@ -419,7 +437,96 @@ class HEC_Theme_Options {
 				<p><?php esc_html_e( 'Current CSS custom property values (updates live as you edit the form above, no need to Save first):', 'ehowme-ebase' ); ?></p>
 				<pre id="hec-css-preview"></pre>
 			</div>
+
+			</div><!-- .hec-options-inner -->
 		</div>
+		<?php
+	}
+
+	/**
+	 * Header Layout tab — drag & drop builder (Left / Center / Right zones),
+	 * with an independent board per Desktop / Tablet / Mobile (they don't
+	 * have to match — see hec_render_header_zones_responsive() in
+	 * inc/header-layout.php, which is what actually renders whichever
+	 * element goes where on the real front-end per breakpoint). All 3
+	 * boards live in the DOM at once (just hidden via the device switcher
+	 * above them) so switching tabs never loses unsaved drag changes.
+	 * Result is serialized as one JSON object into hidden input
+	 * #hec_header_layout and submitted with the rest of the form —
+	 * sanitized server-side by hec_sanitize_header_layout().
+	 */
+	public function render_header_layout_builder() {
+		if ( ! function_exists( 'hec_get_header_elements' ) ) {
+			echo '<p>' . esc_html__( 'Header layout system not loaded.', 'ehowme-ebase' ) . '</p>';
+			return;
+		}
+
+		$elements   = hec_get_header_elements();
+		$layout     = hec_get_header_layout(); // [ desktop => [...], tablet => [...], mobile => [...] ]
+		$saved_json = wp_json_encode( $layout );
+
+		$zone_labels = [
+			'left'   => __( 'Left', 'ehowme-ebase' ),
+			'center' => __( 'Center', 'ehowme-ebase' ),
+			'right'  => __( 'Right', 'ehowme-ebase' ),
+		];
+		$device_labels = [
+			'desktop' => __( 'Desktop', 'ehowme-ebase' ),
+			'tablet'  => __( 'Tablet', 'ehowme-ebase' ),
+			'mobile'  => __( 'Mobile', 'ehowme-ebase' ),
+		];
+		?>
+		<p class="description">
+			<?php esc_html_e( 'ลากรายการ ("chip") ระหว่างช่องเพื่อกำหนดว่า element ไหนอยู่โซนไหนของ header และเรียงลำดับภายในโซนได้ตามต้องการ — ลากไปไว้ที่ "Not Used" เพื่อซ่อน element นั้นออกจาก header ทั้งหมด Desktop / Tablet / Mobile ตั้งค่าแยกกันได้อิสระ ไม่จำเป็นต้องเหมือนกัน อย่าลืมกด "Save Settings" ด้านล่างสุดของหน้าเพื่อบันทึก', 'ehowme-ebase' ); ?>
+		</p>
+
+		<input type="hidden" id="hec_header_layout" name="hec_header_layout" value="<?php echo esc_attr( $saved_json ); ?>">
+
+		<div class="hec-device-switch hec-hb-device-switch" role="group" aria-label="<?php esc_attr_e( 'Editing device', 'ehowme-ebase' ); ?>">
+			<?php foreach ( $device_labels as $device => $label ) : ?>
+				<button type="button" class="hec-hb-device-btn<?php echo ( 'desktop' === $device ) ? ' is-active' : ''; ?>" data-hb-device="<?php echo esc_attr( $device ); ?>"><?php echo esc_html( $label ); ?></button>
+			<?php endforeach; ?>
+		</div>
+
+		<?php foreach ( $device_labels as $device => $device_label ) :
+			$device_layout = $layout[ $device ];
+			$placed        = array_merge( $device_layout['left'], $device_layout['center'], $device_layout['right'] );
+			$unused        = array_diff( array_keys( $elements ), $placed );
+			// Center is meaningless on Tablet/Mobile — the main menu it would
+			// hold is always collapsed into the hamburger at those widths
+			// (see the max-width:991px rules in style.css), so a "Center"
+			// drop zone there would just silently do nothing. Desktop only.
+			$device_zones = ( 'desktop' === $device ) ? $zone_labels : array_diff_key( $zone_labels, [ 'center' => true ] );
+			?>
+			<div class="hec-header-builder<?php echo ( 'desktop' !== $device ) ? ' hec-header-builder--no-center' : ''; ?>" id="hec-header-builder-<?php echo esc_attr( $device ); ?>" data-hb-board="<?php echo esc_attr( $device ); ?>"<?php echo ( 'desktop' !== $device ) ? ' style="display:none"' : ''; ?>>
+				<?php foreach ( $device_zones as $zone => $zone_label ) : ?>
+					<div class="hec-hb-zone">
+						<h4><?php echo esc_html( $zone_label ); ?></h4>
+						<ul class="hec-hb-list" data-zone="<?php echo esc_attr( $zone ); ?>" data-device="<?php echo esc_attr( $device ); ?>">
+							<?php foreach ( $device_layout[ $zone ] as $id ) : ?>
+								<?php if ( ! isset( $elements[ $id ] ) ) continue; ?>
+								<li class="hec-hb-chip" data-id="<?php echo esc_attr( $id ); ?>">
+									<span class="hec-hb-chip-handle" aria-hidden="true">⠿</span>
+									<?php echo esc_html( $elements[ $id ]['label'] ); ?>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+					</div>
+				<?php endforeach; ?>
+
+				<div class="hec-hb-zone hec-hb-zone--unused">
+					<h4><?php esc_html_e( 'Not Used', 'ehowme-ebase' ); ?></h4>
+					<ul class="hec-hb-list" data-zone="unused" data-device="<?php echo esc_attr( $device ); ?>">
+						<?php foreach ( $unused as $id ) : ?>
+							<li class="hec-hb-chip" data-id="<?php echo esc_attr( $id ); ?>">
+								<span class="hec-hb-chip-handle" aria-hidden="true">⠿</span>
+								<?php echo esc_html( $elements[ $id ]['label'] ); ?>
+							</li>
+						<?php endforeach; ?>
+					</ul>
+				</div>
+			</div>
+		<?php endforeach; ?>
 		<?php
 	}
 
@@ -451,7 +558,7 @@ class HEC_Theme_Options {
 		wp_enqueue_script(
 			'hec-theme-options-admin',
 			get_stylesheet_directory_uri() . '/assets/js/theme-options-admin.js',
-			[ 'jquery', 'wp-color-picker' ],
+			[ 'jquery', 'jquery-ui-sortable', 'wp-color-picker' ],
 			wp_get_theme()->get( 'Version' ),
 			true
 		);
@@ -506,6 +613,12 @@ function hec_output_header_css_vars() {
 	$logo_height       = (int) get_option( 'hec_header_logo_height', 50 );
 	$cta_bg            = get_option( 'hec_cta_bg_color', '#222222' );
 	$cta_hover_bg      = get_option( 'hec_cta_hover_bg_color', '#e67e22' );
+	$cta_color         = get_option( 'hec_cta_text_color', '#ffffff' );
+	$cta_bg_2          = get_option( 'hec_cta_bg_color_2', '#ffffff' );
+	$cta_hover_bg_2    = get_option( 'hec_cta_hover_bg_color_2', '#f5f5f5' );
+	$cta_color_2       = get_option( 'hec_cta_text_color_2', '#222222' );
+	$cta_border_2      = get_option( 'hec_cta_border_color_2', '#222222' );
+	$cta_btn_radius_2  = hec_css_length( get_option( 'hec_cta_btn_radius_2', '30px' ), '30px' );
 	$lang_btn_bg             = get_option( 'hec_lang_btn_bg_color', '#ffffff' );
 	$lang_btn_border         = get_option( 'hec_lang_btn_border_color', '#E8E8E6' );
 	$lang_btn_hover_bg       = get_option( 'hec_lang_btn_hover_bg_color', '#f7f7f5' );
@@ -535,8 +648,13 @@ function hec_output_header_css_vars() {
 		--header-logo-height: ' . esc_attr( $logo_height ) . 'px;
 		--header-cta-bg: ' . esc_attr( $cta_bg ) . ';
 		--header-cta-hover-bg: ' . esc_attr( $cta_hover_bg ) . ';
-		--header-cta-color: #ffffff;
+		--header-cta-color: ' . esc_attr( $cta_color ) . ';
 		--header-cta-radius: ' . esc_attr( $cta_btn_radius ) . ';
+		--header-cta-bg-2: ' . esc_attr( $cta_bg_2 ) . ';
+		--header-cta-hover-bg-2: ' . esc_attr( $cta_hover_bg_2 ) . ';
+		--header-cta-color-2: ' . esc_attr( $cta_color_2 ) . ';
+		--header-cta-border-2: ' . esc_attr( $cta_border_2 ) . ';
+		--header-cta-radius-2: ' . esc_attr( $cta_btn_radius_2 ) . ';
 		--lang-btn-bg-color: ' . esc_attr( $lang_btn_bg ) . ';
 		--lang-btn-border-color: ' . esc_attr( $lang_btn_border ) . ';
 		--lang-btn-hover-bg-color: ' . esc_attr( $lang_btn_hover_bg ) . ';

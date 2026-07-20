@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.1.7] - 2026-07-21
+
+### Added
+- **Per-device Header Layout** — Desktop / Tablet / Mobile แยกตั้งค่ากันได้อิสระในหน้า Theme Options → Header Layout (บอร์ด drag & drop 3 ชุด สลับด้วยปุ่ม device switcher) แต่ละ element render ครั้งเดียวใน DOM แล้ว `assets/js/header.js` ย้ายเข้า zone ตาม breakpoint ปัจจุบัน (mobile ≤767 / tablet ≤991 / desktop) — id ของ nav, off-canvas, lang switcher จึงไม่ซ้ำ ข้อมูลเก่ารูปแบบ flat ถูก migrate เป็น per-device อัตโนมัติ
+- **Mobile Menu Toggle เป็น element ใน Header Layout builder** — ปุ่ม hamburger ลาก-ย้ายตำแหน่ง/zone ได้เหมือน element อื่น (เดิม hardcode ท้าย header) พร้อม migration backfill สำหรับ site ที่เคย save layout ไว้ก่อนหน้า เพื่อไม่ให้ปุ่มหายตอนอัปเดต
+- Header Live Preview card ขยายเต็มความกว้างพื้นที่ admin (`#wpbody-content`) — ส่วน form ตั้งค่ายังคงกว้าง 1040px เท่าเดิม
+
+### Changed
+- Tablet / Mobile ไม่มี Center zone แล้ว — ทั้งในบอร์ด builder (เหลือ Left / Right) และใน CSS (ซ่อน `.header-zone--center` ให้ grid ยุบเหลือ 2 คอลัมน์ ชิดซ้าย-ขวาด้วย `justify-content: space-between`)
+- Off-canvas slide menu: ปุ่ม Primary (CTA Button 1) ย้ายไปอยู่ล่างสุดของ footer (Button 2 อยู่เหนือ)
+- Logo เป็น fit-content ทั้ง desktop และ mobile — คอลัมน์ grid ไม่กินพื้นที่เกินขนาดจริงของโลโก้
+
+### Fixed
+- **ตัวเลือก Sticky Header ไม่มีผลจริง** — `.site-header-custom` ถูกตั้ง `position: sticky` ตายตัวใน CSS ปิด option แล้ว header ก็ยัง sticky อยู่ดี ตอนนี้ sticky ทำงานผ่าน class `.is-sticky` ตามค่า option แล้ว (base เป็น relative)
+- **Polylang: field ต่อภาษาในหน้า Theme Options ไม่ขึ้น** — `hec_get_languages()` ใช้ `pll_the_languages()` ซึ่งคืนค่าว่างใน wp-admin ทำให้ field `hec_header_menu_{lang}` / `hec_cta_label_{lang}` ฯลฯ ไม่ถูก register เลย เพิ่ม fallback เป็น `pll_languages_list()` ซึ่งทำงานทุก context (frontend ยังได้ per-page URL จาก path เดิม)
+- **Keyboard navigation ของ dropdown เมนูพัง** — กด Enter บนเมนูแม่ที่มี submenu ถูก `preventDefault()` (เปิดลิงก์ไม่ได้เลย) และการ toggle เขียน inline `display:none` ทับ submenu ทำให้ CSS `:hover`/`:focus-within` reveal ตายถาวรแม้ใช้เมาส์ ตอนนี้พึ่ง `:focus-within` เปิด submenu ตอน Tab เข้า, Enter ตามลิงก์ได้ปกติ และจัดการเฉพาะ `aria-expanded` ผ่าน focusin/focusout
+- กัน fatal `count('')` (PHP 8) ใน `hec_header_language_switcher()` เมื่อ `pll_the_languages()` คืนค่าว่างนอก frontend (REST/preview)
+- **ปุ่ม CTA บน tablet/mobile ดูถูกบีบ** — rule เก่า `padding: 8px 14px; font-size: 0.82rem` ที่ ≤991px บีบปุ่มให้แคบ/ตัวหนังสือเล็ก ทั้งที่ความสูงยัง 42px ลบออกให้ใช้ padding/font ฐาน (0 20px / 0.9rem) สมส่วนกับความสูง
+- ลบ rule เก่าที่ซ่อนปุ่ม CTA ใน header เสมอเมื่อใช้ mobile menu แบบ Sidebar (เขียนก่อนมี per-device builder) — ตอนนี้ผู้ใช้เลือกเองได้ว่า device ไหนโชว์ปุ่มอะไร
+- ระยะห่างปุ่ม/lang switcher กับ hamburger บน tablet/mobile — grid track แบบ `auto` เดิมถูกเบราว์เซอร์แจกพื้นที่เหลือจนคอลัมน์ toggle บานเป็น ~190px บวก margin เก่าซ้อนกับ gap ใหม่เป็น 22px แก้เป็น 2 คอลัมน์ space-between + ลบ margin เก่า เหลือ gap 10px ตามตั้งใจ
+
+## [1.1.6] - 2026-07-04
+
+### Fixed
+- รวม folder `inc/plugin-update-checker` (PUC vendor) เข้า repo/zip — เดิมโดน gitignore ทำให้ theme updater ใช้งานไม่ได้หลังติดตั้งจาก release zip
+
+## [1.1.5] - 2026-07-03
+
+### Fixed
+- โหลด `ebase-config.php` ก่อน fallback constants ใน `functions.php`
+
 ## [1.1.4] - 2026-07-03
 
 ### Added

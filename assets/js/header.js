@@ -69,6 +69,79 @@
 		}
 
 		/* ================================================
+		   Responsive Header Zones — Desktop / Tablet / Mobile can each
+		   have their own independent Left/Center/Right arrangement (see
+		   Theme Options → Header Layout). Every element renders to the
+		   DOM exactly once (never duplicated — that would break unique
+		   ids like the nav menu, off-canvas, language switcher), tagged
+		   by inc/header-layout.php's hec_render_zone_item() with
+		   data-desktop-zone/-order, data-tablet-zone/-order, and
+		   data-mobile-zone/-order. This just moves each item into the
+		   .header-zone--* container that matches the current viewport
+		   width, in the saved order for that device; zone="none" means
+		   "hidden on this device".
+		   ================================================ */
+		(function () {
+			var inner = header.querySelector('.header-inner');
+			if (!inner) return;
+
+			var HEC_TABLET_MAX = 991; // matches the CSS breakpoints above
+			var HEC_MOBILE_MAX = 767;
+
+			function hecDeviceFor(width) {
+				if (width <= HEC_MOBILE_MAX) return 'mobile';
+				if (width <= HEC_TABLET_MAX) return 'tablet';
+				return 'desktop';
+			}
+
+			var hecZoneItems = inner.querySelectorAll('.hec-zone-item[data-hec-el]');
+			var hecLastDevice = null;
+
+			function hecApplyHeaderZones() {
+				var device = hecDeviceFor(window.innerWidth);
+				if (device === hecLastDevice) return; // only touch the DOM on an actual breakpoint change
+				hecLastDevice = device;
+
+				var containers = {
+					left: inner.querySelector('.header-zone--left'),
+					center: inner.querySelector('.header-zone--center'),
+					right: inner.querySelector('.header-zone--right')
+				};
+
+				var buckets = { left: [], center: [], right: [] };
+
+				hecZoneItems.forEach(function (item) {
+					var zone = item.getAttribute('data-' + device + '-zone') || 'none';
+					if (zone === 'none' || !containers[zone]) {
+						item.style.display = 'none';
+						return;
+					}
+					item.style.display = 'contents'; // restore the wrapper's no-op layout mode (see hec_render_zone_item())
+					var order = parseInt(item.getAttribute('data-' + device + '-order') || '0', 10);
+					buckets[zone].push({ item: item, order: order });
+				});
+
+				['left', 'center', 'right'].forEach(function (zone) {
+					var container = containers[zone];
+					if (!container) return;
+					buckets[zone]
+						.sort(function (a, b) { return a.order - b.order; })
+						.forEach(function (entry) { container.appendChild(entry.item); });
+				});
+			}
+
+			if (hecZoneItems.length) {
+				hecApplyHeaderZones();
+				window.addEventListener('resize', function () {
+					// Re-check on every resize tick, but the function itself
+					// only touches the DOM when the resolved device actually
+					// changed — cheap enough to skip a rAF/debounce wrapper.
+					hecApplyHeaderZones();
+				});
+			}
+		})();
+
+		/* ================================================
 		   Language Switcher Dropdown
 		   ================================================ */
 		var langSwitcher = document.getElementById('hec-lang-switcher');
@@ -286,14 +359,22 @@
 				if (link) link.setAttribute('aria-expanded', 'false');
 			});
 
-			// Keyboard: open on Enter or Space
-			link && link.addEventListener('keydown', function (e) {
-				if (e.key === 'Enter' || e.key === ' ') {
-					e.preventDefault();
-					var expanded = link.getAttribute('aria-expanded') === 'true';
-					link.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-					submenu.style.display = expanded ? 'none' : 'flex';
-				}
+			// Keyboard: CSS :focus-within (style.css — .nav-dropdown /
+			// .mega-panel reveal rules) opens the submenu the moment the
+			// link gains focus via Tab, so no key handler is needed to
+			// open it and Enter must stay native so the parent link can
+			// actually be followed. The old handler here preventDefault()-ed
+			// Enter/Space (parent links could never be activated by
+			// keyboard) and toggled inline display:none on the submenu,
+			// which then permanently overrode the CSS :hover/:focus-within
+			// reveal (those only animate opacity/visibility) — one keyboard
+			// close killed the dropdown for mouse users too. Only track
+			// focus for aria-expanded instead.
+			item.addEventListener('focusin', function () {
+				if (link) link.setAttribute('aria-expanded', 'true');
+			});
+			item.addEventListener('focusout', function () {
+				if (link) link.setAttribute('aria-expanded', 'false');
 			});
 		});
 

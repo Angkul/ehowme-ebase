@@ -5,7 +5,7 @@
  Author:       eHowMe
  Author URI:   https://www.ehowme.com/
  Template:     hello-elementor
- Version:      1.1.6
+ Version:      1.1.7
  License:      GNU General Public License v3 or later
  License URI:  http://www.gnu.org/licenses/gpl-3.0.html
  Text Domain:  ehowme-ebase
@@ -26,7 +26,12 @@ html {
    ============================================= */
 
 .site-header-custom {
-	position: sticky;
+	/* Sticky is opt-in via .is-sticky (Theme Options → Sticky Header).
+	   Base is relative — it still works as a positioning context for
+	   the dropdown/off-canvas menus, but scrolls away with the page
+	   when the option is off. (Was unconditionally sticky here, which
+	   made the Sticky Header toggle a no-op.) */
+	position: relative;
 	top: 0;
 	z-index: 9999;
 	/* height + border-box: the 1px border-bottom is drawn INSIDE this
@@ -42,6 +47,10 @@ html {
 	transition: background-color 0.3s ease, border-bottom-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+.site-header-custom.is-sticky {
+	position: sticky;
+}
+
 .site-header-custom.scrolled {
 	box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
 }
@@ -52,7 +61,7 @@ html {
    clipped. Offset sticky "top" by the admin bar's height so the header
    sticks just below it instead. Only applies when logged in — normal
    visitors (no admin bar) are unaffected. */
-body.admin-bar .site-header-custom {
+body.admin-bar .site-header-custom.is-sticky {
 	top: var(--wp-admin--admin-bar--height, 32px);
 }
 
@@ -61,7 +70,7 @@ body.admin-bar .site-header-custom {
    header doesn't need to reserve space for it — undo the desktop
    offset above and stick back to top:0. */
 @media screen and (max-width: 782px) {
-	body.admin-bar .site-header-custom {
+	body.admin-bar .site-header-custom.is-sticky {
 		top: 0;
 	}
 }
@@ -137,15 +146,61 @@ body.hec-transparent-header .site-header-custom + #hec-drawer-overlay + #hec-off
 	background-color: var(--header-nav-color, #333333);
 }
 
+/* CSS Grid instead of flex. Two iterations before this one:
+   1) equal flex:1 on all three zones forced Center into exactly 1/3 of
+      the row regardless of the menu's real width, so anything wider
+      overflowed straight out of its box into its neighbours.
+   2) equal minmax(0,1fr) left/right columns fixed the overflow, but
+      Left/Right columns were centered as EQUAL-WIDTH boxes, not by
+      their actual visible content — since the logo is much narrower
+      than the button+lang cluster on the right, the menu ended up
+      visually closer to the buttons than to the logo (looked crowded
+      even though nothing overlapped).
+   Now: Left/Right are "auto" — sized to exactly fit the logo and the
+   button/lang cluster, nothing more (this is the "logo = fit content"
+   behavior). Center is the one flexible minmax(0,1fr) track and gets
+   ALL the leftover space between those two fixed-size groups; with
+   .header-zone--center{justify-content:center} it's centered WITHIN
+   that leftover space, which is the same as being centered between the
+   logo and the buttons, not between the header's outer edges. */
 .header-inner {
-	display: flex;
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
 	align-items: center;
-	justify-content: space-between;
+	gap: 28px;
 	max-width: var(--header-max-width, 1200px);
 	margin: 0 auto;
 	padding: 0 20px;
 	height: 100%; /* fills whatever height .site-header-custom has — single source of truth */
 }
+
+/* Header Layout zones (Left / Center / Right) — Theme Options → Header
+   Layout controls which element (logo, menu, lang switcher, buttons, and
+   now the Mobile Menu Toggle itself, since it's a draggable zone element
+   too — see inc/header-layout.php) goes in which zone and in what order.
+   Each zone is exactly one of the 3 grid columns above. */
+.header-zone {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	min-width: 0; /* let long menus/labels shrink instead of overflowing the row */
+}
+.header-zone--left    { justify-content: flex-start; }
+/* Centered WITHIN its own column, and that column is now exactly the
+   leftover space between the (fit-content) Left and Right columns —
+   see .header-inner comment above — so this reads as "centered between
+   logo and buttons," not "centered on the whole header." No extra
+   asymmetric padding needed anymore; .header-inner's 28px grid gap
+   already gives equal breathing room on both sides. */
+.header-zone--center  { justify-content: center; min-width: 0; }
+.header-zone--right   { justify-content: flex-end; }
+
+/* Holds elements that Desktop's layout doesn't use but Tablet/Mobile's does
+   (see hec_render_header_zones_responsive() in inc/header-layout.php) —
+   assets/js/header.js moves their contents into the real zones for the
+   current breakpoint on load/resize. Stays hidden as a safe fallback if
+   JS is ever disabled, instead of dumping raw unstyled items on screen. */
+.hec-zone-pool { display: none; }
 
 /* Logo */
 .header-logo a {
@@ -432,13 +487,6 @@ body.hec-transparent-header .site-header-custom + #hec-drawer-overlay + #hec-off
 	color: var(--header-nav-active-color, #2254c5);
 }
 
-/* Header Actions */
-.header-actions {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-}
-
 /* Language Switcher */
 .lang-switch { position: relative; margin-left: 8px; list-style: none; }
 .lang-menu, .lang-menu a { list-style: none; }
@@ -557,6 +605,34 @@ body.hec-transparent-header .site-header-custom + #hec-drawer-overlay + #hec-off
 	transform: translateX(2px);
 }
 
+/* Icon wrapper — keeps the SVG vertically centered inside the button's
+   flex row regardless of whether it's placed before or after the label
+   (see hec_get_cta_icon_markup() / Theme Options → CTA Button → Icon
+   Position). Sits on either side of the label text purely via DOM
+   order + the button's own `gap`, no extra positioning needed. */
+.header-cta-icon {
+	display: inline-flex;
+	align-items: center;
+	flex-shrink: 0;
+}
+
+/* CTA Button 2 — secondary (outline style, ปิดโดย default) */
+.header-cta-btn--secondary {
+	background: var(--header-cta-bg-2, #ffffff);
+	color: var(--header-cta-color-2, #222222) !important;
+	border: 1px solid var(--header-cta-border-2, #222222);
+	border-radius: var(--header-cta-radius-2, 30px);
+}
+
+.header-cta-btn--secondary:hover {
+	background: var(--header-cta-hover-bg-2, #f5f5f5);
+	transform: translateX(2px);
+}
+
+@media (max-width: 1024px) {
+	.header-cta-btn--secondary { border-radius: var(--header-cta-radius-2, 9px); }
+}
+
 /* Mobile Menu Toggle — scoped under #site-header for the same reason
    as .lang-btn above (beats Elementor's ".elementor-kit-4 button"
    reset on padding/border without !important). */
@@ -591,25 +667,71 @@ body.hec-transparent-header .site-header-custom + #hec-drawer-overlay + #hec-off
 }
 
 /* =============================================
+   RESPONSIVE — SQUEEZED DESKTOP (menu still visible, but not full-width)
+   ============================================= */
+
+/* With both CTA buttons on + a full multi-item menu + language switcher,
+   there just isn't room for everything on one row below ~1500px even
+   though the mobile hamburger doesn't kick in until 991px (see
+   .header-nav display:none below). Rather than let Button 2 silently
+   overflow and overlap the last menu item (the bug this block fixes),
+   drop the secondary button first on these "in-between" desktop widths
+   — it's explicitly the optional one (off by default). Button 1 stays
+   since it's the primary CTA, and it still has its own #site-header
+   .header-cta-btn { padding/font-size } tightening below 1024px. */
+@media (max-width: 1499px) and (min-width: 992px) {
+	#site-header .header-cta-btn--secondary {
+		display: none;
+	}
+}
+
+/* =============================================
    RESPONSIVE — BASE
    ============================================= */
 
 @media (max-width: 991px) {
 	.header-nav { display: none !important; }
-	.header-actions { display: flex; gap: 8px; align-items: center; }
+	/* Center zone only ever holds the main menu, which is already hidden
+	   above — but the zone DIV itself is still an empty flex/grid track
+	   that keeps claiming its share of .header-inner's width, leaving a
+	   dead gap that crowds the right-zone buttons against the hamburger.
+	   Hiding the zone AND dropping its grid column (grid-template-columns
+	   still reserves a 1fr track for a hidden item otherwise) frees that
+	   space up entirely — left / right / toggle end up as 3 plain columns. */
+	.header-zone--center { display: none; }
+	.header-inner {
+		/* Only Left and Right left once Center is hidden and the toggle
+		   button lives inside Right as a regular zone item (not its own
+		   grid column anymore — see inc/header-layout.php). Both columns
+		   are plain "auto" (fit-content: Left is just the logo's own
+		   width, Right is exactly as wide as whatever's dragged into it)
+		   — justify-content:space-between pins them to the two edges
+		   using the leftover space as a gap between them, instead of
+		   needing a flexible track that would stretch a column wider
+		   than its content (verified: that's what made the toggle's old
+		   dedicated column balloon to ~190px with the icon left-aligned
+		   inside all that empty space). */
+		grid-template-columns: auto auto;
+		justify-content: space-between;
+		gap: 10px;
+	}
+	.header-zone { gap: 8px; }
 	/* Must match #site-header .mobile-menu-toggle's specificity (1,1,0) —
 	   the base rule now scopes under #site-header (see above), and a
 	   bare .mobile-menu-toggle here would lose to it and stay
 	   display:none on mobile. */
 	#site-header .mobile-menu-toggle { display: flex; }
-	/* Was `position: relative` — that overrode the base sticky header
-	   on every mobile screen, so the header scrolled away with the page
-	   instead of sticking, and never showed the transparent→solid
-	   transition (see the .is-transparent comment above). Sticky still
-	   works fine as a positioning context for the dropdown/off-canvas
-	   menus below, so keep it consistent with desktop. */
-	.site-header-custom { position: sticky; }
-	.header-cta-btn { padding: 8px 14px; font-size: 0.82rem; }
+	/* Sticky-vs-relative on mobile now follows the same .is-sticky
+	   opt-in as desktop (see base rules at the top) — no override
+	   needed here. An old `position: relative` rule at this spot used
+	   to force the header non-sticky on every mobile screen; don't
+	   reintroduce it. */
+	/* เดิมมี .header-cta-btn{padding:8px 14px; font-size:0.82rem;} ตรงนี้ —
+	   บีบปุ่มให้เล็กลงกว่าฐาน (padding 0 20px, font 0.9rem) ทั้งที่ความสูงยัง
+	   42px (จาก @media max-width:1024px ด้านบน) ผลคือปุ่มดูอึดอัด/ถูกบีบ
+	   (กล่องสูงแต่แคบ ตัวหนังสือเล็ก) ตอนนี้พื้นที่บน tablet/mobile ไม่ได้แน่น
+	   เหมือนก่อนแล้ว (เมนูซ่อนเป็น hamburger, ปุ่มโชว์เมื่อผู้ใช้เลือกเอง) เลย
+	   ปล่อยให้ปุ่มใช้ padding/font ฐานเต็มที่ ให้ตัวสูง 42px ดูสมส่วนกับความกว้าง */
 	/* Mega panel ปิดทั้งหมดบน mobile */
 	.mega-panel { display: none !important; }
 }
@@ -700,30 +822,28 @@ body.hec-transparent-header .site-header-custom + #hec-drawer-overlay + #hec-off
 	.admin-bar .hec-offcanvas { top: 0; }
 }
 
-/* Mobile sidebar: ซ่อน CTA, lang ยังแสดงชิด hamburger */
+/* Mobile sidebar: lang ยังแสดงชิด hamburger */
 @media (max-width: 991px) {
-	.mobile-menu-sidebar-right .header-actions .header-cta-btn,
-	.mobile-menu-sidebar-left .header-actions .header-cta-btn {
-		display: none;
-	}
+	/* เดิมมี .mobile-menu-sidebar-*  #site-header .header-cta-btn{display:none}
+	   ตรงนี้ — บังคับซ่อนปุ่ม CTA ในแถบ header เสมอตอน sidebar mode (ไปโผล่แค่ใน
+	   off-canvas footer แทน) เขียนไว้ตั้งแต่ก่อนมี per-device Header Layout
+	   Builder ตอนนั้นปุ่มใน header แถบ tablet/mobile ยังไม่มีทางเลือก เลยซ่อนไว้
+	   เป็น default กันซ้ำกับปุ่มใน off-canvas เสมอ — ตอนนี้ผู้ใช้เลือกเองได้ผ่าน
+	   Header Layout Builder ว่าจะให้ Tablet/Mobile โซนไหนมีปุ่มไหนบ้าง (ปกติ
+	   default คือไม่มี ปุ่มเลยไปโผล่แค่ใน off-canvas เหมือนเดิม) กฎ display:none
+	   เดิมเลยไปลบล้างสิ่งที่ผู้ใช้ตั้งค่าไว้ใน builder ทิ้งอย่างเงียบๆ — เอาออก */
 
-	/* Logo ดัน lang + hamburger ไปชิดขวา */
-	.mobile-menu-sidebar-right .header-logo,
-	.mobile-menu-sidebar-left .header-logo {
-		flex: 1;
-	}
+	/* หมายเหตุ: เดิมมี .header-logo{flex:1} ตรงนี้เพื่อดัน lang+hamburger
+	   ไปชิดขวาตอนที่ header-nav ถูกซ่อน — ตอนนี้ .header-zone ทุกโซนเป็น
+	   flex:1 อยู่แล้วโดย default (ดูด้านบน) จึงทำหน้าที่เดียวกันให้เองแล้ว
+	   ไม่ต้อง override ซ้ำ */
 
-	/* Lang + hamburger ไม่มี gap ระหว่างกัน */
-	.mobile-menu-sidebar-right .header-actions,
-	.mobile-menu-sidebar-left .header-actions {
-		gap: 0;
-		margin-right: 10px;
-	}
-
-	.mobile-menu-sidebar-right .mobile-menu-toggle,
-	.mobile-menu-sidebar-left .mobile-menu-toggle {
-		margin-left: 2px;
-	}
+	/* หมายเหตุ: เดิมมี .mobile-menu-sidebar-* .header-zone--right{gap:0}
+	   ตรงนี้ เพื่อให้ lang+hamburger ชิดกัน (ตอนนั้น hamburger ยังไม่ได้อยู่ใน
+	   โซนเดียวกัน มีระยะห่างของตัวเองแยกจาก .header-zone gap) — ตอนนี้
+	   Mobile Menu Toggle ลากเข้าโซนได้เหมือน element อื่นแล้ว มันเลยใช้
+	   .header-zone{gap:8px} ด้านบนร่วมกับตัวอื่นในโซนไปเลย ไม่ต้อง override
+	   เป็นกรณีพิเศษอีกต่อไป */
 
 	/* Lang dropdown เปิดไปทางซ้าย ไม่ overflow viewport */
 	.mobile-menu-sidebar-right .lang-menu,

@@ -93,6 +93,9 @@ require_once get_stylesheet_directory() . '/inc/theme-options.php';
 // Header functions & Walker
 require_once get_stylesheet_directory() . '/inc/header-functions.php';
 
+// Header Layout — slot-based builder (Left / Center / Right zones)
+require_once get_stylesheet_directory() . '/inc/header-layout.php';
+
 // GitHub Auto-Updater via Plugin Update Checker (admin only)
 if ( is_admin() && EBASE_GITHUB_USER && EBASE_GITHUB_REPO ) {
 	$_puc_dir  = get_stylesheet_directory() . '/inc/plugin-update-checker';

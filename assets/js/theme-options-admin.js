@@ -1,7 +1,9 @@
 /**
  * Admin UI behavior for the "Theme Options" page: tab switching, a live
- * CSS-variables text preview, and a real visual header mock-up that
- * updates instantly as fields change (before hitting Save).
+ * CSS-variables text preview, and a live iframe preview of the actual
+ * homepage (with a Desktop / Tablet / Mobile device switcher) that
+ * updates instantly for colors/toggles as fields change (before hitting
+ * Save) — see hecApplyLivePreview().
  */
 jQuery(function ($) {
 
@@ -71,8 +73,13 @@ jQuery(function ($) {
 			'--header-logo-height': hecVal('hec_header_logo_height', { px: true, fallback: '50px' }),
 			'--header-cta-bg': hecVal('hec_cta_bg_color', { fallback: '#222222' }),
 			'--header-cta-hover-bg': hecVal('hec_cta_hover_bg_color', { fallback: '#e67e22' }),
-			'--header-cta-color': '#ffffff',
+			'--header-cta-color': hecVal('hec_cta_text_color', { fallback: '#ffffff' }),
 			'--header-cta-radius': hecVal('hec_cta_btn_radius', { px: true, fallback: '30px' }),
+			'--header-cta-bg-2': hecVal('hec_cta_bg_color_2', { fallback: '#ffffff' }),
+			'--header-cta-hover-bg-2': hecVal('hec_cta_hover_bg_color_2', { fallback: '#f5f5f5' }),
+			'--header-cta-color-2': hecVal('hec_cta_text_color_2', { fallback: '#222222' }),
+			'--header-cta-border-2': hecVal('hec_cta_border_color_2', { fallback: '#222222' }),
+			'--header-cta-radius-2': hecVal('hec_cta_btn_radius_2', { px: true, fallback: '30px' }),
 			'--lang-btn-bg-color': hecVal('hec_lang_btn_bg_color', { fallback: '#ffffff' }),
 			'--lang-btn-border-color': hecVal('hec_lang_btn_border_color', { fallback: '#E8E8E6' }),
 			'--lang-btn-hover-bg-color': hecVal('hec_lang_btn_hover_bg_color', { fallback: '#f7f7f5' }),
@@ -99,58 +106,81 @@ jQuery(function ($) {
 	}
 
 	/* ---------------------------------------------------------------
-	 * Visual header mock-up (#hec-live-preview) — same CSS classes as
-	 * the real front-end header, just with the CSS variables applied
-	 * as inline custom properties on the wrapper so they cascade down.
+	 * Live iframe preview (#hec-live-preview-frame) — the actual
+	 * homepage, same-origin, so its document is directly reachable.
+	 * CSS variables + a few show/hide toggles get pushed into the
+	 * REAL rendered page instantly. Anything that needs different
+	 * markup (menu items, icon choice, header layout order, mobile
+	 * menu style, ...) only updates after Save reloads this iframe
+	 * along with the rest of the admin page.
 	 * ------------------------------------------------------------- */
-	function hecApplyLivePreview() {
-		var $preview = $('#hec-live-preview');
-		if (!$preview.length) return;
-
-		var vars = hecComputeVars();
-		var el = $preview.get(0);
-		$.each(vars, function (key, val) {
-			el.style.setProperty(key, val);
-		});
-
-		$('#hec-mock-lang-switch').toggle(hecIsChecked('hec_show_lang_switcher', true));
-		$('#hec-mock-cta').toggle(hecIsChecked('hec_show_cta_button', true));
-
-		var isTransparent = hecIsChecked('hec_header_transparent', false);
-		$('#hec-mock-header').toggleClass('is-transparent', isTransparent);
-		$preview.toggleClass('is-transparent', isTransparent);
-
-		// Logo: swap between uploaded image and site-name text, live.
-		var logoUrl = $('#hec_logo_url').val();
-		var $logoLink = $('#hec-mock-logo-wrap a');
-		if (logoUrl) {
-			var $img = $logoLink.find('img');
-			if (!$img.length) {
-				$logoLink.empty();
-				$img = $('<img id="hec-mock-logo-img" alt="" style="max-height:var(--header-logo-height,50px);width:auto;">');
-				$logoLink.append($img);
-			}
-			$img.attr('src', logoUrl);
-		} else if (!$logoLink.find('.site-title-text').length) {
-			var siteName = $preview.data('site-name') || 'Site';
-			$logoLink.empty().append($('<span class="site-title-text" id="hec-mock-sitename"></span>').text(siteName));
+	function hecGetPreviewDoc() {
+		var iframe = document.getElementById('hec-live-preview-frame');
+		if (!iframe) return null;
+		try {
+			var doc = iframe.contentDocument || (iframe.contentWindow && iframe.contentWindow.document);
+			return (doc && doc.documentElement) ? doc : null;
+		} catch (e) {
+			return null; // shouldn't happen (same-origin), but don't blow up if it does
 		}
 	}
 
-	// Scrolling inside the preview box toggles the same ".scrolled"
-	// class assets/js/header.js adds on the real front-end, so the
-	// transparent → solid transition can be seen without leaving wp-admin.
-	$('#hec-live-preview').on('scroll', function () {
-		var scrolled = $(this).scrollTop() > 40;
-		$('#hec-mock-header').toggleClass('scrolled', scrolled);
+	// Hide the wp-admin toolbar inside the preview iframe (the real
+	// page shows it too since we're logged in) so the box only shows
+	// the theme's own header, not a second admin bar on top of it.
+	function hecInjectPreviewStyles(doc) {
+		if (doc.getElementById('hec-preview-style-override')) return;
+		var style = doc.createElement('style');
+		style.id = 'hec-preview-style-override';
+		style.textContent = '#wpadminbar{display:none !important;} html{margin-top:0 !important;} body.admin-bar{margin-top:0 !important;}';
+		doc.head.appendChild(style);
+	}
+
+	function hecApplyLivePreview() {
+		var doc = hecGetPreviewDoc();
+		if (!doc) return;
+
+		var vars = hecComputeVars();
+		var root = doc.documentElement;
+		$.each(vars, function (key, val) {
+			root.style.setProperty(key, val);
+		});
+
+		var $doc = $(doc);
+		$doc.find('.lang-switch').toggle(hecIsChecked('hec_show_lang_switcher', true));
+		$doc.find('.header-cta-btn:not(.header-cta-btn--secondary)').toggle(hecIsChecked('hec_show_cta_button', true));
+		$doc.find('.header-cta-btn--secondary').toggle(hecIsChecked('hec_show_cta_button_2', false));
+
+		var isTransparent = hecIsChecked('hec_header_transparent', false);
+		$doc.find('.site-header-custom').toggleClass('is-transparent', isTransparent);
+	}
+
+	// Re-apply everything each time the iframe (re)loads — covers the
+	// first load and any manual refresh of the preview frame.
+	$('#hec-live-preview-frame').on('load', function () {
+		var doc = hecGetPreviewDoc();
+		if (doc) hecInjectPreviewStyles(doc);
+		hecApplyLivePreview();
 	});
 
-	// Initial paint.
+	/* ---------------------------------------------------------------
+	 * Device switcher — Desktop / Tablet / Mobile. Resizes the iframe's
+	 * wrapper; the real theme's own responsive CSS (media queries)
+	 * takes it from there since the iframe has its own viewport.
+	 * ------------------------------------------------------------- */
+	$('.hec-device-btn').on('click', function () {
+		var device = $(this).data('device');
+		$('.hec-device-btn').removeClass('is-active');
+		$(this).addClass('is-active');
+		$('#hec-live-preview-frame-wrap').attr('data-device', device);
+	});
+
+	// Initial paint (raw CSS text box only — the iframe applies itself
+	// via its own 'load' handler above once it's actually ready).
 	hecBuildCssPreview();
-	hecApplyLivePreview();
 
 	// Live-update on every field that feeds a CSS variable or toggles
-	// a mock element's visibility.
+	// an element's visibility in the preview iframe.
 	var hecWatchedFields = [
 		'#hec_header_height', '#hec_header_max_width', '#hec_header_transparent',
 		'#hec_header_bg_color', '#hec_header_border_color', '#hec_header_nav_color',
@@ -158,7 +188,9 @@ jQuery(function ($) {
 		'#hec_header_logo_height', '#hec_show_lang_switcher', '#hec_lang_btn_bg_color',
 		'#hec_lang_btn_border_color', '#hec_lang_btn_hover_bg_color', '#hec_lang_btn_hover_border_color',
 		'#hec_lang_btn_hover_color', '#hec_lang_btn_radius', '#hec_lang_menu_radius', '#hec_show_cta_button',
-		'#hec_cta_bg_color', '#hec_cta_hover_bg_color', '#hec_cta_btn_radius'
+		'#hec_cta_bg_color', '#hec_cta_hover_bg_color', '#hec_cta_text_color', '#hec_cta_btn_radius',
+		'#hec_show_cta_button_2', '#hec_cta_bg_color_2', '#hec_cta_hover_bg_color_2',
+		'#hec_cta_text_color_2', '#hec_cta_border_color_2', '#hec_cta_btn_radius_2'
 	].join(', ');
 
 	$(document).on('input change', hecWatchedFields, function () {
@@ -209,5 +241,61 @@ jQuery(function ($) {
 		$(this).remove();
 		hecApplyLivePreview();
 	});
+
+	/* ---------------------------------------------------------------
+	 * Header Layout builder (tab "Header Layout") — one independent
+	 * board per Desktop / Tablet / Mobile (they don't have to match),
+	 * switched via the .hec-hb-device-btn tabs above them. All 3 boards
+	 * stay initialized/live in the DOM at once (just hidden), so
+	 * switching device tabs never drops an in-progress drag on another
+	 * board. Drag chips between the Left / Center / Right / Not Used
+	 * lists with jQuery UI Sortable (bundled with WP core, no extra
+	 * library needed). Every drop re-serializes ALL 3 boards' current
+	 * state into the hidden #hec_header_layout input as one JSON object
+	 * ({ desktop:{...}, tablet:{...}, mobile:{...} }), which submits
+	 * with the rest of the form and is sanitized server-side by
+	 * hec_sanitize_header_layout().
+	 * ------------------------------------------------------------- */
+	var $hecBuilders = $('.hec-header-builder');
+	if ($hecBuilders.length && $.fn.sortable) {
+		function hecSerializeHeaderLayout() {
+			var layout = {};
+			$hecBuilders.each(function () {
+				var device = $(this).data('hb-board');
+				var deviceLayout = { left: [], center: [], right: [] };
+				$(this).find('.hec-hb-list').each(function () {
+					var zone = $(this).data('zone');
+					if (!deviceLayout.hasOwnProperty(zone)) return; // "unused" list isn't saved
+					$(this).find('.hec-hb-chip').each(function () {
+						deviceLayout[zone].push($(this).data('id'));
+					});
+				});
+				layout[device] = deviceLayout;
+			});
+			$('#hec_header_layout').val(JSON.stringify(layout));
+		}
+
+		$hecBuilders.each(function () {
+			var device = $(this).data('hb-board');
+			$(this).find('.hec-hb-list').sortable({
+				connectWith: '#hec-header-builder-' + device + ' .hec-hb-list',
+				placeholder: 'hec-hb-placeholder',
+				forcePlaceholderSize: true,
+				tolerance: 'pointer',
+				update: hecSerializeHeaderLayout
+			});
+		});
+
+		// Builder's own Desktop/Tablet/Mobile switcher (separate from the
+		// Live Preview's — see the .hec-hb-device-btn CSS comment). Just
+		// shows the matching board; nothing to re-render, every board is
+		// already live underneath.
+		$('.hec-hb-device-btn').on('click', function () {
+			var device = $(this).data('hb-device');
+			$('.hec-hb-device-btn').removeClass('is-active');
+			$(this).addClass('is-active');
+			$hecBuilders.hide().filter('[data-hb-board="' + device + '"]').show();
+		});
+	}
 
 });
