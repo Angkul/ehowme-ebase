@@ -310,6 +310,17 @@
 		   alongside the existing :hover/:focus-within in style.css,
 		   not a replacement — keyboard/focus behavior is untouched.
 		   ================================================ */
+		// True mouse/trackpad devices only — iPads and other touchscreens
+		// report pointer:coarse + hover:none here even in desktop-class
+		// browsers (Safari on iPadOS included), so this reliably tells
+		// real hover-capable devices apart from tap-only ones. Re-checked
+		// live (not cached) since it's cheap and a device's input mode
+		// can't really change mid-session anyway, but future-proofs
+		// against e.g. a 2-in-1 laptop switching tablet/laptop mode.
+		function hecHoverCapable() {
+			return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+		}
+
 		var megaCloseTimers = new WeakMap();
 
 		document.querySelectorAll('.nav-item--mega').forEach(function (item) {
@@ -330,8 +341,61 @@
 				megaCloseTimers.set(item, timer);
 			}
 
-			item.addEventListener('mouseenter', openMega);
-			item.addEventListener('mouseleave', scheduleCloseMega);
+			// Only wire up hover-open/close on devices that actually
+			// hover. On a touchscreen, mobile browsers fire a
+			// compatibility "mouseenter" immediately before the "click"
+			// on first tap — without this guard that mouseenter would
+			// call openMega() a moment before the tap-to-open handler
+			// below even runs, so by the time it checked whether the
+			// panel was already open, it always would be, and every tap
+			// would fall straight through to navigation. This was the
+			// actual cause of "clicking a mega item on tablet/iPad just
+			// redirects instead of opening the panel first."
+			if (hecHoverCapable()) {
+				item.addEventListener('mouseenter', openMega);
+				item.addEventListener('mouseleave', scheduleCloseMega);
+			}
+		});
+
+		/* ================================================
+		   Mega Menu — tap-to-open on touch/no-hover devices
+
+		   First tap on a mega item's own link opens the panel instead
+		   of following the link (preventDefault); tapping the SAME
+		   trigger again while it's already open lets that second tap
+		   navigate normally, since at that point the user has seen the
+		   panel and is choosing to go to the parent page on purpose.
+		   Tapping anywhere outside the open item closes it (there's no
+		   mouseleave equivalent on touch to rely on for that).
+		   Desktop/mouse devices are untouched — hecHoverCapable() being
+		   true there means every branch below is a no-op and normal
+		   hover + click-follows-link behavior is exactly as before.
+		   ================================================ */
+		document.querySelectorAll('.nav-item--mega').forEach(function (item) {
+			var trigger = item.querySelector(':scope > .nav-link');
+			if (!trigger) return;
+
+			trigger.addEventListener('click', function (e) {
+				if (hecHoverCapable()) return;
+
+				if (!item.classList.contains('mega-open')) {
+					e.preventDefault();
+					document.querySelectorAll('.nav-item--mega.mega-open').forEach(function (other) {
+						if (other !== item) other.classList.remove('mega-open');
+					});
+					item.classList.add('mega-open');
+				}
+				// already open — this tap follows the link normally
+			});
+		});
+
+		document.addEventListener('click', function (e) {
+			if (hecHoverCapable()) return;
+			document.querySelectorAll('.nav-item--mega.mega-open').forEach(function (item) {
+				if (!item.contains(e.target)) {
+					item.classList.remove('mega-open');
+				}
+			});
 		});
 
 		/* ================================================

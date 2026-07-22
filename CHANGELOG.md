@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.1.9] - 2026-07-22
+
+### Fixed
+- **Mega menu บน tablet/iPad: แตะครั้งแรกที่เมนูแม่ redirect ไปหน้าเลย ไม่เปิด mega panel ก่อน** — ปุ่ม hover-intent เดิมใน `header.js` (`mouseenter`/`mouseleave` เปิด/ปิด class `.mega-open`) ผูกไว้แบบไม่เช็คชนิด device เลย บนหน้าจอสัมผัส (รวม iPad ใน Safari) เบราว์เซอร์จำลอง event `mouseenter` ให้ก่อน `click` เสมอในการแตะครั้งเดียว ผลคือ `.mega-open` ถูกเติมไปแล้วตั้งแต่ก่อน handler ของการแตะจะเช็คด้วยซ้ำ ทำให้ทุกครั้งที่แตะเหมือน "เปิดอยู่แล้ว" แล้วปล่อยให้ลิงก์ทำงานตามปกติ (redirect ทันที) แก้โดย: (1) ผูก `mouseenter`/`mouseleave` เฉพาะ device ที่ hover ได้จริงผ่าน `matchMedia('(hover: hover) and (pointer: fine)')`, (2) เพิ่ม `click` handler แยกสำหรับ device ที่ไม่รองรับ hover — แตะครั้งแรก `preventDefault()` + เปิด panel, แตะซ้ำที่เดิม (panel เปิดอยู่แล้ว) ปล่อยให้ลิงก์ทำงานปกติ, และแตะนอกกล่องที่เปิดอยู่จะปิดให้อัตโนมัติ ไม่กระทบพฤติกรรม hover เดิมบน PC/เมาส์เลย
+
 ## [1.1.8] - 2026-07-22
 
 ### Fixed
