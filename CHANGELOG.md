@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.1.8] - 2026-07-22
+
+### Fixed
+- **Dropdown เมนูปกติ (ไม่ใช่ mega menu) เรียงรายการแนวนอนแทนที่จะเป็นแนวตั้ง** — `.header-nav ul { display:flex }` เดิมเป็น descendant selector ที่จับ `<ul>` ทุกชั้นใน `.header-nav` รวมถึง `<ul class="nav-dropdown">` ของ submenu ด้วย ทำให้ submenu เรียงเป็นแถวแทนที่จะเป็นลิสต์แนวตั้ง แก้โดยจำกัด flex ให้เฉพาะ `.header-nav > ul` (ลิสต์บนสุดจริงๆ) เท่านั้น
+- **รองรับ dropdown ซ้อนได้ 2 ชั้น (submenu ของ submenu)** — เพิ่ม chevron/aria-haspopup ให้ item ที่มี submenu ต่อในชั้นที่ 1 และ flyout ไปทางขวา (`.nav-dropdown .nav-dropdown`) สำหรับชั้นที่ 2 (PHP เดิมรองรับ `depth => 3` อยู่แล้ว งานนี้คือฝั่ง render/CSS)
+- **บั๊กจริงที่เจอระหว่างทำ**: `HEC_Nav_Walker::start_el()` ปิด `</li>` ทันทีในบรรทัดเดียวกับที่เปิด ทำให้ `<ul>` ของ submenu ชั้น 2 ถูกต่อออกมา "นอก" `<li>` ที่ปิดไปแล้ว (`<ul><li>...</li><ul>...</ul></li></ul>` ซึ่งเป็น HTML ที่ผิด ` <ul>` ซ้อนใน `<ul>` ตรงๆ ไม่ได้) เบราว์เซอร์เลยตัด submenu ชั้น 2 หลุดออกจากโครงสร้าง ไม่โผล่ตอน hover แม้ chevron จะติ๊กว่ามี children ก็ตาม — ย้ายการปิด `</li>` ไปที่ `end_el()` แทน (แพทเทิร์นเดียวกับ top-level ที่ทำถูกอยู่แล้ว)
+
+### Removed
+- **CSS ที่ซ่อน CTA Button 2 อัตโนมัติในช่วง "squeezed desktop" (992px–~1499px)** — เดิมถ้าพื้นที่ไม่พอ (ปุ่มทั้งสอง + เมนูเต็ม + lang switcher) ธีมจะซ่อน Button 2 ให้เองผ่าน media query ที่ผูกกับ breakpoint คงที่ (ลองเปลี่ยนเป็นคำนวณจาก Container Max Width ระหว่างพัฒนา แต่สรุปว่าตัดออกทั้งหมด) — การซ่อนปุ่มที่แอดมินเปิดใช้งานเองแบบเงียบๆ ถือเป็นพฤติกรรมที่ไม่ควรมี ถ้าปุ่มล้นทับเมนูจริงในหน้างานจริง ตอนนี้เป็นการตัดสินใจของแอดมินแทน ผ่านช่องทางที่มีอยู่แล้ว: Theme Options → CTA Buttons → "Show Button 2" (ปิดทั้งเว็บ) หรือ Theme Options → Header Layout → ลาก CTA Button 2 ออกจากบอร์ด Desktop (เฉพาะ device นั้น Tablet/Mobile ยังโชว์ได้ตามปกติ) ปุ่ม Button 1 (primary) ยังหด padding/font/height ต่ำกว่า 1024px ตามเดิม ไม่กระทบ
+
 ## [1.1.7] - 2026-07-21
 
 ### Added

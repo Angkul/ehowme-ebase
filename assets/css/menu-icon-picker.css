@@ -1,0 +1,137 @@
+/**
+ * Menu Icon Picker — Appearance → Menus
+ * Styles for the "Menu Icon" toggle button + search/grid/upload popover
+ * injected by assets/js/menu-icon-picker.js.
+ */
+
+.hec-icon-picker {
+	display: block;
+}
+
+.hec-icon-picker-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.hec-icon-picker-preview {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 18px;
+	height: 18px;
+	flex-shrink: 0;
+	color: #1d2327;
+}
+.hec-icon-picker-preview svg {
+	width: 18px;
+	height: 18px;
+}
+.hec-icon-picker-preview .nav-dropdown-icon-img {
+	width: 18px;
+	height: 18px;
+}
+
+/* Single shared popover, repositioned per-item by the JS (see
+   openPopoverFor()) rather than duplicated per menu item. */
+.hec-icon-picker-popover {
+	position: absolute;
+	z-index: 999999;
+	width: 300px;
+	box-sizing: border-box;
+	max-height: 360px;
+	overflow-y: auto;
+	/* Explicit, not left to default — setting only overflow-y makes the
+	   browser compute overflow-x as "auto" too (per spec, a non-visible
+	   overflow-y can't pair with overflow-x:visible), which is exactly
+	   what surfaced the grid track bug below as a horizontal scrollbar
+	   instead of it just being invisibly wrong. Pin it hidden now that
+	   the grid itself no longer overflows. */
+	overflow-x: hidden;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+	padding: 10px;
+}
+
+.hec-icon-picker-popover-hdr {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.hec-icon-picker-search {
+	flex: 1;
+	min-width: 0;
+}
+
+.hec-icon-picker-close {
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	font-size: 20px;
+	line-height: 1;
+	color: #787c82;
+	padding: 2px 6px;
+}
+.hec-icon-picker-close:hover {
+	color: #d63638;
+}
+
+.hec-icon-picker-grid {
+	display: grid;
+	/* minmax(0, 1fr), NOT bare 1fr — a bare "1fr" track expands to
+	   "minmax(auto, 1fr)", where "auto" is a floor equal to the
+	   widest item's own max-content size in that track. One button
+	   (e.g. the "None" tile, or any icon whose SVG/padding/border adds
+	   up to more than an even 1/6 share) was enough to drag EVERY
+	   column in the row up to that same width, ballooning all the
+	   tiles into oversized, unevenly-proportioned squares and forcing
+	   the grid wider than the 300px popover (hence the horizontal
+	   scrollbar). minmax(0, 1fr) removes that content-driven floor —
+	   every column is a genuinely even 1/6 share, items shrink to fit
+	   it instead of forcing it to grow. */
+	grid-template-columns: repeat(6, minmax(0, 1fr));
+	gap: 4px;
+	margin-bottom: 10px;
+}
+
+.hec-icon-picker-item {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	width: 100%;
+	aspect-ratio: 1 / 1;
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	cursor: pointer;
+	color: #1d2327;
+	padding: 4px;
+	transition: background 0.15s ease, border-color 0.15s ease;
+}
+.hec-icon-picker-item:hover {
+	background: #f0f0f1;
+	border-color: #8c8f94;
+}
+.hec-icon-picker-item svg {
+	width: 18px;
+	height: 18px;
+}
+
+/* Same single square as every other .hec-icon-picker-item now — no
+   grid-column:span override (see the JS comment for why that combined
+   badly with aspect-ratio:1/1). Just a muted color to read as "no
+   selection" rather than a real icon choice. */
+.hec-icon-picker-item--none {
+	color: #787c82;
+}
+
+.hec-icon-picker-upload {
+	width: 100%;
+	justify-content: center;
+	display: flex;
+}

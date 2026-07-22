@@ -166,6 +166,114 @@ function hec_get_cta_icons() {
 			'label' => __( 'Download', 'ehowme-ebase' ),
 			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>',
 		],
+		'user' => [
+			'label' => __( 'User', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /></svg>',
+		],
+		'users' => [
+			'label' => __( 'Users', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg>',
+		],
+		'home' => [
+			'label' => __( 'Home', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l-2 0l9 -9l9 9l-2 0" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" /><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" /></svg>',
+		],
+		'star' => [
+			'label' => __( 'Star', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1.002l3.086 -6.253l3.086 6.253l6.9 1.002l-5 4.867l1.179 6.873z" /></svg>',
+		],
+		'star-filled' => [
+			'label' => __( 'Star (Filled)', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1.002l3.086 -6.253l3.086 6.253l6.9 1.002l-5 4.867l1.179 6.873z" /></svg>',
+		],
+		'heart' => [
+			'label' => __( 'Heart', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg>',
+		],
+		'heart-filled' => [
+			'label' => __( 'Heart (Filled)', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg>',
+		],
+		'shopping-cart' => [
+			'label' => __( 'Shopping Cart', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1" /><circle cx="17" cy="20" r="1" /><path d="M4 4h2l2.5 12.5a2 2 0 0 0 2 1.6h7a2 2 0 0 0 2 -1.6l1.5 -7.4h-15" /></svg>',
+		],
+		'shopping-bag' => [
+			'label' => __( 'Shopping Bag', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6.331 8h11.339a2 2 0 0 1 1.977 2.304l-1.255 8.152a3 3 0 0 1 -2.966 2.544h-6.852a3 3 0 0 1 -2.965 -2.544l-1.255 -8.152a2 2 0 0 1 1.977 -2.304z" /><path d="M9 11v-5a3 3 0 0 1 6 0v5" /></svg>',
+		],
+		'trash' => [
+			'label' => __( 'Trash', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>',
+		],
+		'search' => [
+			'label' => __( 'Search', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7" /><path d="M21 21l-6 -6" /></svg>',
+		],
+		'zoom-in' => [
+			'label' => __( 'Zoom In', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7" /><path d="M21 21l-6 -6" /><path d="M7 10l6 0" /><path d="M10 7l0 6" /></svg>',
+		],
+		'zoom-out' => [
+			'label' => __( 'Zoom Out', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7" /><path d="M21 21l-6 -6" /><path d="M7 10l6 0" /></svg>',
+		],
+		'thumb-up' => [
+			'label' => __( 'Thumbs Up', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11v8a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1v-7a1 1 0 0 1 1 -1h3a4 4 0 0 0 4 -4v-1a2 2 0 0 1 4 0v5h3a2 2 0 0 1 2 2l-1 5a2 3 0 0 1 -2 2h-7a3 3 0 0 1 -3 -3" /></svg>',
+		],
+		'thumb-down' => [
+			'label' => __( 'Thumbs Down', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 13v-8a1 1 0 0 0 -1 -1h-2a1 1 0 0 0 -1 1v7a1 1 0 0 0 1 1h3a4 4 0 0 1 4 4v1a2 2 0 0 0 4 0v-5h3a2 2 0 0 0 2 -2l-1 -5a2 3 0 0 0 -2 -2h-7a3 3 0 0 0 -3 3" /></svg>',
+		],
+		'refresh' => [
+			'label' => __( 'Refresh', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" /><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" /></svg>',
+		],
+		'check' => [
+			'label' => __( 'Check', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l10 -10" /></svg>',
+		],
+		'check-circle' => [
+			'label' => __( 'Check Circle', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M9 12l2 2l4 -4" /></svg>',
+		],
+		'info-circle' => [
+			'label' => __( 'Info', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 9h.01" /><path d="M11 12h1v4h1" /></svg>',
+		],
+		'alert-circle' => [
+			'label' => __( 'Alert', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8v4" /><path d="M12 16h.01" /></svg>',
+		],
+		'bell' => [
+			'label' => __( 'Bell', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5a2 2 0 0 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /></svg>',
+		],
+		'bookmark' => [
+			'label' => __( 'Bookmark', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" /></svg>',
+		],
+		'tag' => [
+			'label' => __( 'Tag', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h.01" /><path d="M3 7v4a1 1 0 0 0 .3 .7l9 9a1 1 0 0 0 1.4 0l6.6 -6.6a1 1 0 0 0 0 -1.4l-9 -9a1 1 0 0 0 -.7 -.3h-4a2 2 0 0 0 -2 2z" /></svg>',
+		],
+		'map-pin' => [
+			'label' => __( 'Map Pin', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /><path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z" /></svg>',
+		],
+		'clock' => [
+			'label' => __( 'Clock', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" /></svg>',
+		],
+		'calendar' => [
+			'label' => __( 'Calendar', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /></svg>',
+		],
+		'flag' => [
+			'label' => __( 'Flag', 'ehowme-ebase' ),
+			'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5a5 5 0 0 1 7 0a5 5 0 0 0 7 0v9a5 5 0 0 1 -7 0a5 5 0 0 0 -7 0v-9z" /><path d="M5 21v-7" /></svg>',
+		],
 	];
 }
 
@@ -180,6 +288,43 @@ function hec_get_cta_icon_markup( $icon_slug ) {
 		return '';
 	}
 	return '<span class="header-cta-icon">' . $icons[ $icon_slug ]['svg'] . '</span>';
+}
+
+/**
+ * เหมือน hec_get_cta_icon_markup() แต่ห่อด้วย span.nav-dropdown-icon แทน
+ * (ขนาด/ตำแหน่งคุมแยกจาก CTA icon ผ่าน CSS) ใช้กับ icon ต่อรายการใน
+ * dropdown เมนู header — icon slug มาจาก library เดียวกัน (hec_get_cta_icons())
+ * เพื่อให้ธีมมี icon set เดียว ไม่ต้องดูแลสอง registry
+ */
+function hec_get_menu_item_icon_markup( $icon_slug ) {
+	$icons = hec_get_cta_icons();
+	if ( empty( $icon_slug ) || 'none' === $icon_slug || empty( $icons[ $icon_slug ]['svg'] ) ) {
+		return '';
+	}
+	return '<span class="nav-dropdown-icon">' . $icons[ $icon_slug ]['svg'] . '</span>';
+}
+
+/**
+ * คืน markup ของ icon ที่จะโชว์จริงสำหรับ menu item หนึ่งตัว — เช็ครูป
+ * custom (_menu_item_hec_icon_image) ก่อนเสมอ ถ้ามีและยังเป็นรูปจริง
+ * (กันกรณีถูกลบออกจาก Media Library ไปแล้วแต่ meta ค้าง) ใช้รูปนั้น,
+ * ไม่งั้น fallback ไป preset slug (_menu_item_hec_icon) ตามเดิม — ทั้งสอง
+ * กรณีห่อด้วย span.nav-dropdown-icon เดียวกัน CSS จึงคุมขนาด/ตำแหน่งแบบ
+ * เดียวกันไม่ว่าจะเป็น SVG หรือรูป
+ */
+function hec_get_menu_item_icon_markup_for_item( $item_id ) {
+	$image_id = (int) get_post_meta( $item_id, '_menu_item_hec_icon_image', true );
+	if ( $image_id && wp_attachment_is_image( $image_id ) ) {
+		$img = wp_get_attachment_image( $image_id, 'hec_menu_icon', false, [
+			'class'   => 'nav-dropdown-icon-img',
+			'alt'     => '',
+			'loading' => 'lazy',
+		] );
+		if ( $img ) {
+			return '<span class="nav-dropdown-icon nav-dropdown-icon--image">' . $img . '</span>';
+		}
+	}
+	return hec_get_menu_item_icon_markup( get_post_meta( $item_id, '_menu_item_hec_icon', true ) );
 }
 
 /**
@@ -326,6 +471,152 @@ function hec_save_mega_menu_checkbox( $menu_id, $menu_item_db_id ) {
 	update_post_meta( $menu_item_db_id, '_menu_item_classes', $classes );
 }
 
+/**
+ * โหลด JS/CSS ของ Menu Icon Picker เฉพาะหน้า Appearance → Menus
+ * (nav-menus.php) เท่านั้น — ไม่ใช่ทุกหน้า admin — พร้อม wp_enqueue_media()
+ * เพื่อให้ wp.media() ใน menu-icon-picker.js ใช้ได้ (เปิด Media Library
+ * modal สำหรับปุ่ม "Upload Custom Icon") และ localize icon registry
+ * (hec_get_cta_icons()) ให้ JS render กริดได้โดยไม่ต้อง duplicate ข้อมูล
+ * icon เป็น HTML ซ้ำต่อ menu item (เมนูอาจมีหลายสิบ item)
+ */
+add_action( 'admin_enqueue_scripts', 'hec_enqueue_menu_icon_picker_assets' );
+function hec_enqueue_menu_icon_picker_assets( $hook ) {
+	if ( 'nav-menus.php' !== $hook ) {
+		return;
+	}
+
+	wp_enqueue_media();
+
+	wp_enqueue_style(
+		'hec-menu-icon-picker',
+		get_stylesheet_directory_uri() . '/assets/css/menu-icon-picker.css',
+		[],
+		wp_get_theme()->get( 'Version' )
+	);
+
+	wp_enqueue_script(
+		'hec-menu-icon-picker',
+		get_stylesheet_directory_uri() . '/assets/js/menu-icon-picker.js',
+		[ 'jquery', 'media-editor' ],
+		wp_get_theme()->get( 'Version' ),
+		true
+	);
+
+	wp_localize_script( 'hec-menu-icon-picker', 'hecIconPickerData', [
+		'icons' => hec_get_cta_icons(),
+		'i18n'  => [
+			'search'       => __( 'Search icons…', 'ehowme-ebase' ),
+			'close'        => __( 'Close', 'ehowme-ebase' ),
+			'none'         => __( 'None', 'ehowme-ebase' ),
+			'upload'       => __( 'Upload Custom Icon', 'ehowme-ebase' ),
+			'uploadTitle'  => __( 'Select Menu Icon', 'ehowme-ebase' ),
+			'uploadButton' => __( 'Use this image', 'ehowme-ebase' ),
+		],
+	] );
+}
+
+/**
+ * เพิ่มปุ่ม "Menu Icon" (เปิด picker แบบ search+grid ผ่าน JS, ดู
+ * assets/js/menu-icon-picker.js) ในกล่องแก้ไข menu item ที่
+ * Appearance → Menus (ทุก depth — แต่ตอนนี้ frontend render เฉพาะรายการใน
+ * dropdown/submenu เท่านั้น ไม่ใช่แถบเมนูบนสุด, ดู HEC_Nav_Walker::start_el()
+ * branch "DROPDOWN LINK") เลือกได้ทั้งจาก icon library ของธีม
+ * (hec_get_cta_icons() — ไม่ใช่ icon ของ Anvogue หรือธีม/plugin อื่น เป็น
+ * SVG ที่เขียนเองในสไตล์ Tabler Icons สัญญาอนุญาต MIT) หรือ upload รูป
+ * custom (PNG/JPEG/GIF/WebP เท่านั้น — ไม่รับ SVG upload เพราะเสี่ยง XSS
+ * ถ้ามีคน inject <script> เข้าไปใน SVG file) ผ่าน WP Media Library ปกติ
+ * ไม่บังคับใส่ ค่าเริ่มต้นคือไม่มี icon เสมอ
+ *
+ * เก็บ 2 ฟิลด์แยกกัน: slug ของ preset icon กับ attachment ID ของรูป
+ * custom — ฝั่ง JS จะเคลียร์อีกอันเวลาเลือกอย่างใดอย่างหนึ่ง, ฝั่ง save
+ * (hec_save_menu_item_icon()) ก็ validate จากทั้งสอง input โดยรูป custom
+ * (ถ้ามี) ชนะ preset เสมอ
+ */
+add_action( 'wp_nav_menu_item_custom_fields', 'hec_menu_item_icon_field', 10, 4 );
+function hec_menu_item_icon_field( $item_id, $item, $depth, $args ) {
+	$current_slug  = get_post_meta( $item_id, '_menu_item_hec_icon', true );
+	$current_image = (int) get_post_meta( $item_id, '_menu_item_hec_icon_image', true );
+	$preview       = '';
+
+	if ( $current_image ) {
+		$preview = wp_get_attachment_image( $current_image, [ 24, 24 ], false, [ 'alt' => '' ] );
+	} elseif ( $current_slug ) {
+		$preview = hec_get_menu_item_icon_markup( $current_slug );
+	}
+	?>
+	<p class="field-hec-icon description description-wide">
+		<span class="hec-icon-picker" data-item-id="<?php echo esc_attr( $item_id ); ?>">
+			<button type="button" class="button hec-icon-picker-toggle">
+				<span class="hec-icon-picker-preview"><?php echo $preview; // phpcs:ignore -- whitelisted SVG registry or wp_get_attachment_image(), both already safe ?></span>
+				<?php esc_html_e( 'Menu Icon', 'ehowme-ebase' ); ?>
+			</button>
+			<input type="hidden"
+			       class="hec-icon-picker-slug"
+			       name="menu-item-hec-icon[<?php echo esc_attr( $item_id ); ?>]"
+			       value="<?php echo esc_attr( $current_slug ?: 'none' ); ?>">
+			<input type="hidden"
+			       class="hec-icon-picker-image"
+			       name="menu-item-hec-icon-image[<?php echo esc_attr( $item_id ); ?>]"
+			       value="<?php echo esc_attr( $current_image ?: '' ); ?>">
+		</span>
+		<br>
+		<span class="description">
+			<?php esc_html_e( 'Shown to the left of the label in dropdown submenus only (not the top-level menu bar). Pick a preset icon or upload your own image (PNG/JPEG/GIF/WebP).', 'ehowme-ebase' ); ?>
+		</span>
+	</p>
+	<?php
+}
+
+/**
+ * บันทึก icon ที่เลือกด้านบน — รูป custom (ถ้ามี, validate ว่าเป็น
+ * attachment จริงและ mime type อยู่ใน whitelist ราสเตอร์เท่านั้น — ไม่รับ
+ * image/svg+xml แม้ media library จะมีไฟล์ svg อยู่ก็ตาม) ชนะ preset
+ * icon เสมอ เก็บเป็น postmeta ของ menu item เอง (ต่างจาก has-mega ที่เก็บ
+ * ใน _menu_item_classes เพราะ icon ไม่ใช่ CSS class ที่มีความหมายจะโชว์ใน
+ * Screen Options ด้วย) validate slug ของ preset กับ whitelist ของ
+ * hec_get_cta_icons() เสมอ ไม่เชื่อค่าที่ส่งมาตรงๆ
+ */
+add_action( 'wp_update_nav_menu_item', 'hec_save_menu_item_icon', 10, 2 );
+function hec_save_menu_item_icon( $menu_id, $menu_item_db_id ) {
+	if ( ! isset( $_POST['menu-item-title'][ $menu_item_db_id ] ) ) {
+		return;
+	}
+	if ( ! current_user_can( 'edit_theme_options' ) ) {
+		return;
+	}
+
+	$allowed_image_mimes = [ 'image/png', 'image/jpeg', 'image/gif', 'image/webp' ];
+	$image_id            = isset( $_POST['menu-item-hec-icon-image'][ $menu_item_db_id ] )
+		? absint( $_POST['menu-item-hec-icon-image'][ $menu_item_db_id ] )
+		: 0;
+
+	if ( $image_id && wp_attachment_is_image( $image_id ) && in_array( get_post_mime_type( $image_id ), $allowed_image_mimes, true ) ) {
+		update_post_meta( $menu_item_db_id, '_menu_item_hec_icon_image', $image_id );
+		// รูป custom ถูกเลือก — ล้าง preset slug ทิ้ง กัน markup เก่าตกค้าง
+		// ไม่ให้ทั้งสอง source ขัดกันตอน render (ดู hec_get_menu_item_icon_markup_for_item()).
+		delete_post_meta( $menu_item_db_id, '_menu_item_hec_icon' );
+		return;
+	}
+
+	// ไม่มีรูป custom ที่ผ่าน validation — เคลียร์ค่าเก่า (ถ้ามี) แล้วตกไปใช้ preset ตามปกติ
+	delete_post_meta( $menu_item_db_id, '_menu_item_hec_icon_image' );
+
+	$posted = isset( $_POST['menu-item-hec-icon'][ $menu_item_db_id ] )
+		? sanitize_key( wp_unslash( $_POST['menu-item-hec-icon'][ $menu_item_db_id ] ) )
+		: 'none';
+
+	$valid_icons = hec_get_cta_icons();
+	if ( ! isset( $valid_icons[ $posted ] ) ) {
+		$posted = 'none';
+	}
+
+	if ( 'none' === $posted ) {
+		delete_post_meta( $menu_item_db_id, '_menu_item_hec_icon' );
+	} else {
+		update_post_meta( $menu_item_db_id, '_menu_item_hec_icon', $posted );
+	}
+}
+
 class HEC_Nav_Walker extends Walker_Nav_Menu {
 
 	/** ตรวจว่า item หรือ parent มี class has-mega ไหม */
@@ -461,12 +752,40 @@ class HEC_Nav_Walker extends Walker_Nav_Menu {
 			$output .= '</li>';
 
 		} else {
-			// ── DROPDOWN LINK ─────────────────────────────
-			$url    = ! empty( $item->url ) ? $item->url : '#';
-			$cur    = $item->current ? ' aria-current="page"' : '';
-			$output .= '<li>';
-			$output .= '<a href="' . esc_url( $url ) . '" class="nav-dropdown-link"' . $cur . '>' . esc_html( $item->title ) . '</a>';
-			$output .= '</li>';
+			// ── DROPDOWN LINK (1st or 2nd level) ────────────
+			// depth 1 = โผล่จาก .header-nav โดยตรง (dropdown แรก), depth 2 =
+			// ซ้อนอีกชั้นในนั้น (dropdown ที่สอง, สูงสุดตาม depth=>3 ใน
+			// hec_header_navigation()) ถ้า item มี children ต่อ (เกิดได้ที่
+			// depth 1 เท่านั้น เพราะ depth 2 คือชั้นลึกสุดที่ render) ใส่
+			// chevron + aria-haspopup ให้เหมือน top level เพื่อบอกว่ามี
+			// submenu ซ้อนอยู่ (เปิดด้วย hover/focus — flyout ไปทางขวา,
+			// ดู .nav-dropdown .nav-dropdown ใน style.css)
+			//
+			// สำคัญ: ห้ามปิด </li> ตรงนี้ (ใน start_el) ถ้า item มี children —
+			// ต้องปล่อยให้ end_el ปิดหลังจาก start_lvl/children/end_lvl ของ
+			// item นี้ทำงานเสร็จก่อน (เหมือน top-level ที่ depth 0) เดิมโค้ด
+			// ปิด </li> ที่นี่ทันที ทำให้ <ul class="nav-dropdown"> ของชั้น
+			// ที่ 2 ถูกต่อออกมานอก <li> ที่ปิดไปแล้ว (ul ซ้อนใน ul ตรงๆ ไม่ใช่
+			// ใน li — HTML ไม่ยอมรับ) เบราว์เซอร์เลยตัดมันหลุดออกจากโครงสร้าง
+			// dropdown ที่ 2 เลยไม่โผล่ตอน hover แม้ chevron จะโชว์ก็ตาม
+			$has_children = in_array( 'menu-item-has-children', $classes, true );
+			$url          = ! empty( $item->url ) ? $item->url : '#';
+			$cur          = $item->current ? ' aria-current="page"' : '';
+			$popup        = $has_children ? ' aria-haspopup="true" aria-expanded="false"' : '';
+			// Optional per-item icon (Appearance → Menus → item → "Menu
+			// Icon", added by hec_menu_item_icon_field() above) — checks
+			// a custom-uploaded image first, falls back to the theme's
+			// whitelisted SVG registry, falls back to nothing. See
+			// hec_get_menu_item_icon_markup_for_item().
+			$icon_markup  = hec_get_menu_item_icon_markup_for_item( $item->ID );
+			$output      .= '<li>';
+			$output      .= '<a href="' . esc_url( $url ) . '" class="nav-dropdown-link"' . $cur . $popup . '>';
+			$output      .= '<span class="nav-dropdown-main">' . $icon_markup . '<span class="nav-dropdown-label">' . esc_html( $item->title ) . '</span></span>';
+			if ( $has_children ) {
+				$output .= '<svg class="nav-chevron" viewBox="0 0 10 10" fill="none" aria-hidden="true" width="10" height="10"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+			}
+			$output .= '</a>';
+			// </li> ปิดใน end_el() แทน — ดูคอมเมนต์ด้านบน
 		}
 	}
 
@@ -534,13 +853,21 @@ function hec_render_ofc_panel( $panel_id, $parent_item, $items, $children_of, $i
 
 		echo '<li class="' . esc_attr( $li_class ) . '">';
 
+		// Same per-item icon as the desktop dropdown (Appearance → Menus
+		// → item → "Menu Icon") — this off-canvas panel is its own
+		// separate render function (not HEC_Nav_Walker), so it needs its
+		// own call to pick the icon up; it was rendering plain text-only
+		// links before, which is why icons "didn't work" on mobile even
+		// though they were set and worked fine on desktop.
+		$icon_markup = hec_get_menu_item_icon_markup_for_item( $item->ID );
+
 		if ( $has_children ) {
 			echo '<div class="ofc-item-row">';
 			$url = ! empty( $item->url ) && '#' !== $item->url ? $item->url : false;
 			if ( $url ) {
-				echo '<a href="' . esc_url( $url ) . '" class="ofc-link">' . esc_html( $item->title ) . '</a>';
+				echo '<a href="' . esc_url( $url ) . '" class="ofc-link">' . $icon_markup . '<span class="ofc-link-label">' . esc_html( $item->title ) . '</span></a>';
 			} else {
-				echo '<span class="ofc-link">' . esc_html( $item->title ) . '</span>';
+				echo '<span class="ofc-link">' . $icon_markup . '<span class="ofc-link-label">' . esc_html( $item->title ) . '</span></span>';
 			}
 			echo '<button class="ofc-trigger" data-target="item-' . esc_attr( $item->ID ) . '" aria-label="' . esc_attr( $item->title ) . ' submenu">';
 			echo '<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 3l8 6-8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -548,7 +875,7 @@ function hec_render_ofc_panel( $panel_id, $parent_item, $items, $children_of, $i
 			echo '</div>';
 		} else {
 			$target = ! empty( $item->target ) ? ' target="' . esc_attr( $item->target ) . '"' : '';
-			echo '<a href="' . esc_url( $item->url ?: '#' ) . '" class="ofc-link"' . $target . '>' . esc_html( $item->title ) . '</a>';
+			echo '<a href="' . esc_url( $item->url ?: '#' ) . '" class="ofc-link"' . $target . '>' . $icon_markup . '<span class="ofc-link-label">' . esc_html( $item->title ) . '</span></a>';
 		}
 
 		echo '</li>';

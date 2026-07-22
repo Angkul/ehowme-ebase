@@ -57,6 +57,12 @@ function hec_theme_setup() {
 	// Post thumbnails
 	add_theme_support( 'post-thumbnails' );
 
+	// ขนาดรูปสำหรับ custom menu-item icon (Appearance → Menus → "Menu Icon"
+	// → Upload Custom Icon, ดู inc/header-functions.php) — hard-crop 40x40
+	// (true = crop ตรงกลางเสมอ) ให้ทุก icon แสดงในกรอบเดียวกันไม่ว่าไฟล์ต้นทาง
+	// จะเป็นสัดส่วนอะไร แล้วค่อยย่อลงอีกทีด้วย CSS ให้เท่ากับ SVG icon (19px)
+	add_image_size( 'hec_menu_icon', 40, 40, true );
+
 	// HTML5
 	add_theme_support( 'html5', [
 		'search-form',

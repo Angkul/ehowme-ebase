@@ -5,7 +5,7 @@
  Author:       eHowMe
  Author URI:   https://www.ehowme.com/
  Template:     hello-elementor
- Version:      1.1.7
+ Version:      1.1.8
  License:      GNU General Public License v3 or later
  License URI:  http://www.gnu.org/licenses/gpl-3.0.html
  Text Domain:  ehowme-ebase
@@ -172,6 +172,11 @@ body.hec-transparent-header .site-header-custom + #hec-drawer-overlay + #hec-off
 	margin: 0 auto;
 	padding: 0 20px;
 	height: 100%; /* fills whatever height .site-header-custom has — single source of truth */
+	/* Containing block for .mega-panel (position:absolute) — see the
+	   comment where .nav-item--mega used to have "position: relative"
+	   for why this moved here (mega panel overflowing off the left
+	   edge of the viewport on "squeezed desktop" widths). */
+	position: relative;
 }
 
 /* Header Layout zones (Left / Center / Right) — Theme Options → Header
@@ -227,12 +232,27 @@ body.hec-transparent-header .site-header-custom + #hec-drawer-overlay + #hec-off
 	align-items: center;
 }
 
-.header-nav ul {
+/* Only the TOP-level <ul> (wp_nav_menu's own root list, a direct
+   child of <nav class="header-nav">) should lay out horizontally.
+   This used to be the broad "`.header-nav ul`" descendant selector,
+   which also matched every nested dropdown <ul class="nav-dropdown">
+   (including a 2nd-level nested one) — dropdown submenus were
+   rendering as a horizontal row instead of a vertical list because of
+   this. Scope the flex row to `>` (direct child) only; nested lists
+   reset below stay block-level (vertical) by default. */
+.header-nav > ul {
 	display: flex;
+	align-items: center;
 	list-style: none;
 	margin: 0;
 	padding: 0;
 	gap: 0;
+}
+
+.header-nav ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
 }
 
 .header-nav ul li {
@@ -297,22 +317,56 @@ body.hec-transparent-header .site-header-custom + #hec-drawer-overlay + #hec-off
 	opacity: 0.4;
 	transition: transform 0.2s ease, opacity 0.2s ease;
 }
-.nav-item:hover .nav-chevron,
-.nav-item:focus-within .nav-chevron {
+/* Scoped to `> .nav-link >` (direct child chain), not a bare
+   descendant selector — otherwise hovering the top-level .nav-item
+   (which stays :hover the whole time its dropdown is open) would also
+   match and flip any nested 2nd-level chevron inside the open
+   dropdown, via higher specificity beating the more specific
+   .nav-dropdown-link rule below. */
+.nav-item:hover > .nav-link > .nav-chevron,
+.nav-item:focus-within > .nav-link > .nav-chevron {
 	transform: rotate(180deg);
 	opacity: 0.8;
 }
 
 /* ── Standard Dropdown ───────────────────── */
-.nav-dropdown {
+/* Rounded "app menu" card look (star/duplicate/rename-style reference):
+   larger radius, soft shadow, roomier row padding/radius, neutral gray
+   hover instead of an accent-color text change. */
+/* Scoped as ".header-nav .nav-dropdown" (0,2,0) — plain ".nav-dropdown"
+   (0,1,0) was losing its "padding" (and margin/list-style) to the
+   generic ".header-nav ul { padding: 0 }" reset added earlier (0,1,1:
+   1 class + 1 type — ties on class count, wins on the extra type
+   selector). The padding value here (14px) was silently being
+   overridden back to 0 this whole time. NOT scoped under #site-header
+   (an ID) on purpose — that would outrank the .nav-item:hover/
+   :focus-within reveal rules below (0,2,0), which rely on matching
+   this same (0,2,0) specificity + coming later in the file to win the
+   opacity/visibility/transform tug-of-war on hover; an ID here would
+   have made the box permanently hidden (base "opacity:0" always
+   winning). .header-nav .nav-dropdown ties the reveal rules'
+   specificity instead of beating it, which is enough to beat the
+   ul reset while still letting source order settle hover correctly. */
+.header-nav .nav-dropdown {
 	position: absolute;
 	top: calc(100% + 1px);
 	left: 0;
-	min-width: 220px;
+	/* Shrink-to-fit around the widest row's actual content (icon + gap
+	   + label + gap + chevron) instead of a fixed min-width. A fixed
+	   240px was too narrow for icon+long-label+chevron combos (text
+	   wrapped inside the row) and too wide for short labels (chevron
+	   ended up stranded far from the text via justify-content:
+	   space-between below) — width:max-content + a plain `gap` (no
+	   space-between) on .nav-dropdown-link makes every row hug its own
+	   content consistently, and the box itself hugs the widest row.
+	   min/max-width are just sane floor/ceiling, not the sizing driver. */
+	width: max-content;
+	min-width: 160px;
+	max-width: 320px;
 	background: #fff;
 	border: 1px solid var(--header-border-color, #e8e8e6);
-	border-radius: 8px;
-	box-shadow: 0 10px 32px rgba(0, 0, 0, 0.1);
+	border-radius: 14px;
+	box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
 	padding: 6px;
 	list-style: none;
 	opacity: 0;
@@ -329,18 +383,147 @@ body.hec-transparent-header .site-header-custom + #hec-drawer-overlay + #hec-off
 	transform: translateY(0);
 }
 
-.nav-dropdown-link {
-	display: block;
-	padding: 9px 14px;
-	border-radius: 6px;
-	font-size: 0.88rem;
+/* Scoped under #site-header (1,1,0) instead of a bare .nav-dropdown-link
+   (0,1,0) — otherwise "display: flex" here LOSES the cascade to the
+   earlier, more specific ".header-nav ul li a:not(.mega-elementor-wrap a)"
+   rule (0,2,4 — 2 classes incl. the :not() argument's, 4 type selectors),
+   which sets "display: block". When that happened, the <a> fell back to
+   block, so it no longer established a flex row for its children — the
+   inner .nav-dropdown-main span (itself display:flex, i.e. block-level)
+   then forced its OWN block box onto its own line, pushing the trailing
+   .nav-chevron <svg> (plain inline content, sibling after a block box)
+   down onto the next line — exactly the "chevron drops below the label"
+   symptom. An ID always outranks any number of classes/types (same
+   #site-header-scoping trick already used for .lang-btn/.mobile-menu-toggle
+   above, to beat Elementor's kit CSS the same way). */
+#site-header .nav-dropdown-link {
+	display: flex;
+	align-items: center;
+	flex-wrap: nowrap;
+	/* justify-content:space-between pushes .nav-chevron flush to the
+	   right edge of the box — the earlier "imbalanced box" bug wasn't
+	   caused by space-between itself, it was caused by combining it
+	   with a FIXED min-width:240px that didn't match the actual content
+	   (short text → huge stretched gap; icon+long text+chevron together
+	   → wrapped instead of growing the box). Now that .nav-dropdown sizes
+	   itself to the widest row's real content (width:max-content, see
+	   above), space-between just puts the chevron at that real edge — a
+	   row's own .nav-dropdown-main + .nav-chevron distance still floors
+	   at `gap` below when the box happens to be exactly this row's
+	   width, and stretches to fill any leftover width when a DIFFERENT
+	   (chevron-less) row in the same dropdown is the widest one — which
+	   is exactly the "chevron flush right" look being asked for here. */
+	justify-content: space-between;
+	gap: 14px;
+	padding: 11px 12px;
+	border-radius: 9px;
+	font-size: 0.92rem;
 	color: var(--header-nav-color, #333);
+	white-space: nowrap;
 	transition: background 0.15s ease, color 0.15s ease;
 }
 
-.nav-dropdown-link:hover,
+/* Icon + label grouped together on the left, tight against the
+   trailing chevron via the row's own `gap` above (no space-between
+   pushing them apart anymore). */
+.nav-dropdown-main {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	min-width: 0;
+}
+
+.nav-dropdown-label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	/* Safety net only — with .nav-dropdown's max-width:320px cap, an
+	   extreme-length menu title truncates with an ellipsis instead of
+	   forcing the box past 320px. Normal short/medium labels never hit
+	   this; the box sizes to their natural width via max-content above. */
+	max-width: 220px;
+}
+
+/* Optional per-item icon (Appearance → Menus → item → "Icon"). Absent
+   for items with no icon set — .nav-dropdown-main's gap only applies
+   between existing children, so the label doesn't leave a gap where
+   an icon would've been. Sized/colored to match the label text
+   rather than the muted top-level nav-chevron. */
+.nav-dropdown-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	color: var(--header-nav-color, #333);
+}
+.nav-dropdown-icon svg {
+	width: 19px;
+	height: 19px;
+}
+
+/* Custom-uploaded icon image (Appearance → Menus → item → "Menu Icon"
+   → Upload Custom Icon) — same box size as the SVG preset icons above
+   so the row layout doesn't jump depending on which icon type an item
+   uses. object-fit:cover crops instead of squashing non-square source
+   images; the 40x40 'hec_menu_icon' registered size (functions.php)
+   already hard-crops server-side, this is just a client-side safety
+   net for images that predate the size registration. */
+.nav-dropdown-icon-img {
+	display: block;
+	width: 19px;
+	height: 19px;
+	object-fit: cover;
+	border-radius: 4px;
+}
+
+/* Chevron on a dropdown link that itself has a submenu (2nd level).
+   Points right (flyout direction) instead of down. */
+.nav-dropdown-link .nav-chevron {
+	margin-left: 0;
+	transform: rotate(-90deg);
+	flex-shrink: 0;
+}
+.nav-dropdown li:hover > .nav-dropdown-link .nav-chevron,
+.nav-dropdown li:focus-within > .nav-dropdown-link .nav-chevron {
+	opacity: 0.8;
+}
+
+/* ── Nested (2nd-level) Dropdown ────────────
+   A .nav-dropdown nested inside another .nav-dropdown's <li> — flies
+   out to the RIGHT of its parent item instead of stacking below it
+   (which would visually collide with the next sibling in a vertical
+   list). Supports exactly one extra level (top-level nav → 1st
+   dropdown → 2nd nested dropdown = 2 levels of submenu), matching
+   wp_nav_menu's 'depth' => 3 in hec_header_navigation(). */
+.nav-dropdown .nav-dropdown {
+	top: -6px;
+	left: 100%;
+	/* left:100% is relative to the containing <li>, not the outer
+	   .nav-dropdown box's true edge — the li's own right edge sits
+	   INSIDE the box by exactly the box's padding (now 14px, up from
+	   8px). margin-left has to clear that padding AND add real breathing
+	   room past the outer box's true border, or the two boxes visually
+	   overlap near the shared edge (was 6px, only just clearing the old
+	   8px padding with ~2px overlap). 22px = 14px padding + 8px gap. */
+	margin-left: 22px;
+}
+
+.nav-dropdown li:hover > .nav-dropdown,
+.nav-dropdown li:focus-within > .nav-dropdown {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+}
+
+/* Plain hover: neutral gray highlight only, text color unchanged
+   (matches the reference — rows brighten on hover, they don't switch
+   to an accent color). The current-page indicator keeps the accent
+   color as its own separate rule, on top of the same gray background. */
+.nav-dropdown-link:hover {
+	background: #f4f4f5;
+}
 .nav-dropdown-link[aria-current="page"] {
-	background: #f7f7f5;
+	background: #f4f4f5;
 	color: var(--header-nav-active-color, #2254c5);
 }
 
@@ -350,8 +533,20 @@ body.hec-transparent-header .site-header-custom + #hec-drawer-overlay + #hec-off
 .header-nav,
 .header-nav > ul { overflow: visible !important; }
 
-/* nav-item--mega เป็น containing block (position: relative) */
-.nav-item--mega { position: relative; }
+/* .nav-item--mega no longer sets position:relative — .mega-panel's
+   containing block moved up to .header-inner instead (see its "position:
+   relative" comment above). This was the actual overflow bug: centering
+   the panel under the individual TRIGGER item (left:50%/translateX(-50%)
+   relative to a nav-item that could sit anywhere across the header's
+   width) pushed it off the left edge of the viewport whenever the
+   trigger was closer to the left than half the panel's own width — the
+   "squeezed desktop" widths (~992–1400px) are exactly where that
+   happens, since the header itself has less room and its items sit
+   further left. Centering within .header-inner instead (which is
+   itself always ≤ the viewport, via max-width + its own padding) means
+   the panel is always centered in a container that already fits, no
+   matter which item triggered it. */
+.nav-item--mega { position: static; }
 
 .mega-panel {
 	position: absolute;
@@ -365,7 +560,12 @@ body.hec-transparent-header .site-header-custom + #hec-drawer-overlay + #hec-off
 	   this offset is set to a non-zero value again, the .mega-open
 	   JS hover-intent below (see assets/js/header.js) is what
 	   actually protects against that — it doesn't care how big the
-	   gap is, only whether the mouse comes back within 250ms. */
+	   gap is, only whether the mouse comes back within 250ms.
+	   top:100% is now relative to .header-inner (the containing
+	   block), i.e. flush against the header's own bottom edge —
+	   effectively the same spot as before (nav items are vertically
+	   centered within the same header height) but exact instead of
+	   approximate. */
 	top: calc(100% + var(--mega-panel-top-offset, 0px));
 	left: 50%;
 	width: var(--mega-panel-width, 760px);
@@ -597,7 +797,7 @@ body.hec-transparent-header .site-header-custom + #hec-drawer-overlay + #hec-off
 }
 
 @media (max-width: 1024px) {
-	.header-cta-btn { height: 42px; border-radius: var(--header-cta-radius, 9px); }
+	.header-cta-btn { border-radius: var(--header-cta-radius, 9px); }
 }
 
 .header-cta-btn:hover {
@@ -667,23 +867,24 @@ body.hec-transparent-header .site-header-custom + #hec-drawer-overlay + #hec-off
 }
 
 /* =============================================
-   RESPONSIVE — SQUEEZED DESKTOP (menu still visible, but not full-width)
+   RESPONSIVE — SQUEEZED DESKTOP (removed, kept as a note)
    ============================================= */
 
-/* With both CTA buttons on + a full multi-item menu + language switcher,
-   there just isn't room for everything on one row below ~1500px even
-   though the mobile hamburger doesn't kick in until 991px (see
-   .header-nav display:none below). Rather than let Button 2 silently
-   overflow and overlap the last menu item (the bug this block fixes),
-   drop the secondary button first on these "in-between" desktop widths
-   — it's explicitly the optional one (off by default). Button 1 stays
-   since it's the primary CTA, and it still has its own #site-header
-   .header-cta-btn { padding/font-size } tightening below 1024px. */
-@media (max-width: 1499px) and (min-width: 992px) {
-	#site-header .header-cta-btn--secondary {
-		display: none;
-	}
-}
+/* There used to be a rule here that auto-hid CTA Button 2 in a
+   "squeezed desktop" width range (992px up to Container Max Width +
+   ~300px), to stop it from overflowing/overlapping the last menu item
+   when both CTA buttons + a full menu + language switcher were all on
+   at once. Removed on purpose — auto-hiding a button the admin
+   explicitly turned on was surprising behavior. If Button 2 overlaps
+   the menu on a real site, that's now a manual decision for the
+   admin instead of silent CSS:
+     - Theme Options → CTA Buttons → "Show Button 2" (off by default)
+       — turn it off site-wide, or
+     - Theme Options → Header Layout — drag CTA Button 2 out of the
+       Desktop board's zones (per-device, so Tablet/Mobile can still
+       keep it) if only the in-between desktop width is a problem.
+   Button 1 (primary) still tightens padding/font/height below 1024px
+   via #site-header .header-cta-btn — that part is unaffected. */
 
 /* =============================================
    RESPONSIVE — BASE
@@ -1023,7 +1224,18 @@ a.ofc-hdr-title:hover {
 
 /* Link */
 .ofc-link {
-	display: block;
+	/* flex (was block) so the optional .nav-dropdown-icon (Appearance →
+	   Menus → item → "Menu Icon" — same icon system as the desktop
+	   dropdown, rendered here by hec_render_ofc_panel()) sits inline
+	   with the label, vertically centered, instead of stacking above/
+	   below it. Not inside .header-nav (this panel is a separate
+	   subtree appended after </header>), so unlike .nav-dropdown-link
+	   there's no specificity fight with the broad
+	   ".header-nav ul li a:not(...)" rule here — plain "display: flex"
+	   is enough. */
+	display: flex;
+	align-items: center;
+	gap: 10px;
 	padding: 14px 20px;
 	font-size: 0.92rem;
 	font-weight: 500;
@@ -1031,6 +1243,14 @@ a.ofc-hdr-title:hover {
 	text-decoration: none;
 	transition: color 0.15s, background 0.15s;
 	line-height: 1.4;
+}
+.ofc-link .nav-dropdown-icon {
+	flex-shrink: 0;
+}
+.ofc-link-label {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 .ofc-link:hover { color: var(--header-nav-active-color, #2254c5); background: #fef9f5; }
 
